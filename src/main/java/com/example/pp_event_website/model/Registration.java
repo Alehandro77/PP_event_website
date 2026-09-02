@@ -1,4 +1,4 @@
-package com.example.demo.model;
+package com.example.pp_event_website.model;
 
 import java.time.LocalDateTime;
 

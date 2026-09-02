@@ -1,7 +1,7 @@
-package com.example.demo.service;
+package com.example.pp_event_website.service;
 
-import com.example.demo.model.User;
-import com.example.demo.repository.UserRepository;
+import com.example.pp_event_website.model.User;
+import com.example.pp_event_website.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

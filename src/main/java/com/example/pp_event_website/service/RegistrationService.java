@@ -1,11 +1,11 @@
-package com.example.demo.service;
+package com.example.pp_event_website.service;
 
-import com.example.demo.model.Event;
-import com.example.demo.model.Registration;
-import com.example.demo.model.User;
-import com.example.demo.repository.EventRepository;
-import com.example.demo.repository.RegistrationRepository;
-import com.example.demo.repository.UserRepository;
+import com.example.pp_event_website.model.Event;
+import com.example.pp_event_website.model.Registration;
+import com.example.pp_event_website.model.User;
+import com.example.pp_event_website.repository.EventRepository;
+import com.example.pp_event_website.repository.RegistrationRepository;
+import com.example.pp_event_website.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

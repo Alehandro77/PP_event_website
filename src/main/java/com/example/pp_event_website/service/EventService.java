@@ -1,7 +1,7 @@
-package com.example.demo.service;
+package com.example.pp_event_website.service;
 
-import com.example.demo.model.Event;
-import com.example.demo.repository.EventRepository;
+import com.example.pp_event_website.model.Event;
+import com.example.pp_event_website.repository.EventRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
