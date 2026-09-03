@@ -1,12 +1,24 @@
 package com.example.pp_event_website.model;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "events")
 public class Event {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(unique = true)
+    @NotBlank(message = "Название обязательно к заполнению")
     private String title;
+
     private String description;
     private String category;
     private LocalDate eventDate;
@@ -16,20 +28,6 @@ public class Event {
     private LocalDateTime createdAt;
 
     public Event() {}
-
-    public Event(Long id, String title, String description, String category, 
-                 LocalDate eventDate, LocalTime eventTime, String location, 
-                 Integer maxParticipants, LocalDateTime createdAt) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.category = category;
-        this.eventDate = eventDate;
-        this.eventTime = eventTime;
-        this.location = location;
-        this.maxParticipants = maxParticipants;
-        this.createdAt = createdAt;
-    }
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

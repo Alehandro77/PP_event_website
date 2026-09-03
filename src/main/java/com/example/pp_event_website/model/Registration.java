@@ -1,23 +1,26 @@
 package com.example.pp_event_website.model;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "registrations")
 public class Registration {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private Long userId;
     private Long eventId;
     private LocalDateTime registeredAt;
+
+    @NotBlank(message = "Статус обязателен к заполнению")
     private String status;
 
     public Registration() {}
-
-    public Registration(Long id, Long userId, Long eventId, LocalDateTime registeredAt, String status) {
-        this.id = id;
-        this.userId = userId;
-        this.eventId = eventId;
-        this.registeredAt = registeredAt;
-        this.status = status;
-    }
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

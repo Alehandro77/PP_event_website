@@ -1,25 +1,35 @@
 package com.example.pp_event_website.model;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "users")
 public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(unique = true)
+    @NotBlank(message = "Имя обязательно к заполнению")
     private String name;
+
+    @Column(unique = true)
+    @NotBlank(message = "Почта обязательна к заполнению")
     private String email;
+
+    @NotBlank(message = "Пароль обязателен к заполнению")
     private String passwordHash;
-    private String role;
+
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.USER;
+
     private LocalDateTime registeredAt;
 
     public User() {}
-
-    public User(Long id, String name, String email, String passwordHash, String role, LocalDateTime registeredAt) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.passwordHash = passwordHash;
-        this.role = role;
-        this.registeredAt = registeredAt;
-    }
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -33,8 +43,8 @@ public class User {
     public String getPasswordHash() { return passwordHash; }
     public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
 
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
+    public Role getRole() { return role; }
+    public void setRole(Role role) { this.role = role; }
 
     public LocalDateTime getRegisteredAt() { return registeredAt; }
     public void setRegisteredAt(LocalDateTime registeredAt) { this.registeredAt = registeredAt; }

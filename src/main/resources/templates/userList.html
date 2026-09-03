@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Управление пользователями</title>
+</head>
+
+<body>
+
+<!--TODO: В конце этого вообще не должно быть, пользоватлеи сами регаются-->
+<form class="form" method="post" action="user/add">
+    <input type="text" placeholder="name" name="name" required>
+    <input type="text" placeholder="email" name="email" required>
+    <!--        Потом будет хэш-->
+    <input type="password" placeholder="password" name="passwordHash" required>
+    <select name="role">
+        <option th:each="r : ${roles}"
+                th:value="${r}"
+                th:text="${r}">
+        </option>
+    </select>
+
+    <!-- TODO: Сделать в контроллере чтобы дата сама ставилась-->
+    <input type="datetime-local" placeholder="дата регистрации" name="registeredAt" required>
+    <input type="submit" class="btn primary" value="Добавить">
+</form>
+
+<h1>Управление пользователями</h1>
+
+<form method="get" action="/user">
+    <input type="number" placeholder="id пользователя" name="id" required>
+    <input type="submit" value="Найти">
+</form>
+
+<form method="get" action="/user">
+    <input type="text" placeholder="email пользователя" name="email" required>
+    <input type="submit" value="Найти">
+</form>
+
+<div th:if="${errorMessage}" th:text="${errorMessage}" style="color:red"></div>
+<div th:if="${searchMessage}" th:text="${searchMessage}"></div>
+
+<h2 th:if="${users != null and !users.isEmpty()}">Список пользователей</h2>
+
+<ul th:if="${users != null and !users.isEmpty()}">
+
+    <li th:each="user : ${users}">
+        <span><strong>ID:</strong> <span th:text="${user.id}"></span></span>
+        <span><strong>Имя:</strong> <span th:text="${user.name}"></span></span>
+        <span><strong>Email:</strong> <span th:text="${user.email}"></span></span>
+        <span><strong>Дата регистрации:</strong> <span th:text="${user.registeredAt}"></span></span>
+        <span><strong>Текущая роль:</strong>
+                <span th:text="${user.role}"></span>
+            </span>
+
+<!-- Это пока не работает!!! -->
+        <form method="post" action="/update-role">
+            <input type="hidden" name="userId" th:value="${user.id}">
+
+            <label for="roleSelect_${user.id}">Изменить роль</label>
+            <select id="roleSelect_${user.id}" name="role">
+                <option th:each="r : ${roles}"
+                        th:value="${r}"
+                        th:text="${r}"
+                        th:selected="${r == user.role}">
+                </option>
+            </select>
+
+            <input type="submit" value="Изменить роль">
+        </form>
+    </li>
+</ul>
+</body>
+</html>
