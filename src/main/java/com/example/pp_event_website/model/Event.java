@@ -1,11 +1,16 @@
 package com.example.pp_event_website.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "events")
@@ -16,18 +21,29 @@ public class Event {
     private Long id;
 
     @Column(unique = true)
-    @NotBlank(message = "Название обязательно к заполнению")
+    @NotBlank(message = "Название обязательно к заполнению!")
     private String title;
-
     private String description;
+    @NotBlank(message = "Категория обязательна к заполнению!")
     private String category;
+    @NotNull(message = "Дата события обязательна к заполнению!")
     private LocalDate eventDate;
+    @NotNull(message = "Время события обязательна к заполнению!")
     private LocalTime eventTime;
+    @NotBlank(message = "Местоположение обязательно к заполнению!")
     private String location;
+    @Min(value = 1, message = "Кол-во участников должно быть не менне одного человека")
     private Integer maxParticipants;
     private LocalDateTime createdAt;
+    @OneToMany(mappedBy = "eventId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Registration> registrations = new ArrayList<>();
 
     public Event() {}
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -55,4 +71,7 @@ public class Event {
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public List<Registration> getRegistrations() { return registrations; }
+    public void setRegistrations(List<Registration> registrations) { this.registrations = registrations; }
 }

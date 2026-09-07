@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -28,7 +31,8 @@ public class User {
     private Role role = Role.USER;
 
     private LocalDateTime registeredAt;
-
+    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Registration> registrations = new ArrayList<>();
     public User() {}
 
     public Long getId() { return id; }
@@ -48,4 +52,7 @@ public class User {
 
     public LocalDateTime getRegisteredAt() { return registeredAt; }
     public void setRegisteredAt(LocalDateTime registeredAt) { this.registeredAt = registeredAt; }
+
+    public List<Registration> getRegistrations() { return registrations; }
+    public void setRegistrations(List<Registration> registrations) { this.registrations = registrations; }
 }

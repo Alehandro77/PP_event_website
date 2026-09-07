@@ -5,17 +5,12 @@ import com.example.pp_event_website.model.Event;
 import java.util.List;
 
 public interface EventService {
-
-    public List<Event> findAll();
-
-    public Event findById(Long id);
-
-    public List<Event> findByCategory(String category);
-
-    public Event createEvent(Event event);
-
-    public Event updateEvent(Event event);
-
-    public void deleteEvent(Long id);
-
+    List<Event> findAll();
+    Event findById(Long id);
+    List<Event> findByCategory(String category);
+    List<Event> searchByTitle(String title);
+    List<Event> findByLocation(String location);
+    Event createEvent(Event event);
+    Event updateEvent(Long id, Event eventDetails);
+    void deleteEvent(Long id);
 }

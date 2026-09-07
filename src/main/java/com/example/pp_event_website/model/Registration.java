@@ -12,9 +12,13 @@ public class Registration {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "event_id", nullable = false)
+    private Event eventId;
 
-    private Long userId;
-    private Long eventId;
     private LocalDateTime registeredAt;
 
     @NotBlank(message = "Статус обязателен к заполнению")
@@ -22,14 +26,19 @@ public class Registration {
 
     public Registration() {}
 
+    @PrePersist
+    protected void onCreate() {
+        this.registeredAt = LocalDateTime.now();
+    }
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public Long getUserId() { return userId; }
-    public void setUserId(Long userId) { this.userId = userId; }
+    public User getUserId() { return userId; }
+    public void setUserId(User userId) { this.userId = userId; }
 
-    public Long getEventId() { return eventId; }
-    public void setEventId(Long eventId) { this.eventId = eventId; }
+    public Event getEventId() { return eventId; }
+    public void setEventId(Event eventId) { this.eventId = eventId; }
 
     public LocalDateTime getRegisteredAt() { return registeredAt; }
     public void setRegisteredAt(LocalDateTime registeredAt) { this.registeredAt = registeredAt; }
