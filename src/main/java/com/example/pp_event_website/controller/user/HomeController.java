@@ -1,4 +1,4 @@
-package com.example.pp_event_website.controller;
+package com.example.pp_event_website.controller.user;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,7 +9,7 @@ public class HomeController {
 
     @GetMapping("/")
     public String home(Model model){
-        return "index";
+        return "/public/index";
     }
 
 }

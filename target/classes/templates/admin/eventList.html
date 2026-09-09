@@ -6,11 +6,35 @@
 </head>
 <body>
 
-<form th:action="@{/admin/events/filter}" method="get">
-    <label for="title">Поиск по названию:</label>
-    <input type="text" id="title" name="title" th:value="${paramValue}" placeholder="Введите название..." />
+<h2>Поиск и фильтрация событий</h2>
+<form th:action="@{/admin/events}" method="get">
+    <div>
+        <label for="title">Название:</label>
+        <input type="text" id="title" name="title" th:value="${paramTitle}" placeholder="Название..." />
+
+        <label for="description">Описание:</label>
+        <input type="text" id="description" name="description" th:value="${paramDescription}" placeholder="Описание..." />
+
+        <label for="category">Категория:</label>
+        <input type="text" id="category" name="category" th:value="${paramCategory}" placeholder="Категория..." />
+    </div>
+    <br/>
+    <div>
+        <label for="location">Локация:</label>
+        <input type="text" id="location" name="location" th:value="${paramLocation}" placeholder="Локация..." />
+
+        <label for="eventDate">Дата:</label>
+        <input type="date" id="eventDate" name="eventDate" th:value="${paramEventDate}" />
+
+        <label for="eventTime">Время:</label>
+        <input type="time" id="eventTime" name="eventTime" th:value="${paramEventTime}" />
+
+        <label for="maxParticipants">Мин. мест:</label>
+        <input type="number" id="maxParticipants" name="maxParticipants" th:value="${paramMaxParticipants}" placeholder="От..." />
+    </div>
+    <br/>
     <button type="submit">Найти</button>
-    <a th:href="@{/admin/events}">Сбросить</a>
+    <a th:href="@{/admin/events}">Сбросить фильтры</a>
 </form>
 
 <hr/>
@@ -21,8 +45,11 @@
         <th>ID</th>
         <th>Название</th>
         <th>Категория</th>
-        <th>Дата</th>1
+        <!-- ИСПРАВЛЕНО: удалена лишняя цифра 1 после th:text -->
+        <th>Дата</th>
+        <th>Время</th>
         <th>Локация</th>
+        <th>Мест</th>
         <th>Действия</th>
     </tr>
     </thead>
@@ -32,7 +59,9 @@
         <td th:text="${event.title}">Концерт</td>
         <td th:text="${event.category}">Музыка</td>
         <td th:text="${event.eventDate}">2026-10-15</td>
+        <td th:text="${event.eventTime}">18:00</td>
         <td th:text="${event.location}">Москва</td>
+        <td th:text="${event.maxParticipants}">100</td>
         <td>
             <form th:action="@{/admin/events/delete}" method="post">
                 <input type="hidden" name="id" th:value="${event.id}" />
@@ -45,15 +74,16 @@
 
 <div th:if="${eventsPage.totalPages > 1}">
     <a th:if="${eventsPage.hasPrevious()}"
-       th:href="@{/admin/events(page=${eventsPage.number - 1})}">Назад</a>
+       th:href="@{/admin/events(page=${eventsPage.number - 1}, title=${paramTitle}, description=${paramDescription}, category=${paramCategory}, location=${paramLocation}, eventDate=${paramEventDate}, eventTime=${paramEventTime}, maxParticipants=${paramMaxParticipants})}">Назад</a>
 
     <span th:each="i : ${#numbers.sequence(0, eventsPage.totalPages - 1)}">
-            <a th:href="@{/admin/events(page=${i})}"
-               th:text="${i + 1}">1</a>
-        </span>
+        <a th:href="@{/admin/events(page=${i}, title=${paramTitle}, description=${paramDescription}, category=${paramCategory}, location=${paramLocation}, eventDate=${paramEventDate}, eventTime=${paramEventTime}, maxParticipants=${paramMaxParticipants})}"
+           th:text="${i + 1}"
+           th:style="${i == eventsPage.number} ? 'font-weight: bold;' : ''">1</a>
+    </span>
 
     <a th:if="${eventsPage.hasNext()}"
-       th:href="@{/admin/events(page=${eventsPage.number + 1})}">Вперед</a>
+       th:href="@{/admin/events(page=${eventsPage.number + 1}, title=${paramTitle}, description=${paramDescription}, category=${paramCategory}, location=${paramLocation}, eventDate=${paramEventDate}, eventTime=${paramEventTime}, maxParticipants=${paramMaxParticipants})}">Вперед</a>
 </div>
 
 <hr/>

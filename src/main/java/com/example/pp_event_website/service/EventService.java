@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -21,8 +22,8 @@ public interface EventService {
     Page<Event> searchByEventDate(LocalDate eventDate, Pageable pageable);
     Page<Event> searchByEventTime(LocalTime eventTime, Pageable pageable);
     Page<Event> searchByLocation(String location, Pageable pageable);
-    Page<Event> searchByMaxParticipants(String maxParticipants, Pageable pageable);
-    Page<Event> searchByCreatedAt(String createdAt, Pageable pageable);
+    Page<Event> searchByMaxParticipants(Integer maxParticipants, Pageable pageable);
+    Page<Event> searchByCreatedAt(LocalDateTime createdAt, Pageable pageable);
 
     //Без учета пагинации
     List<Event> findByTitle(String title);
@@ -32,7 +33,12 @@ public interface EventService {
     List<Event> findByEventTime(LocalTime eventTime);
     List<Event> findByLocation(String location);
     List<Event> findByMaxParticipants(Integer maxParticipants);
-    List<Event> findByCreatedAt(LocalDate createdAt);
+    List<Event> findByCreatedAt(LocalDateTime createdAt);
+
+    //Поиск с помощью sql-запроса
+    Page<Event> searchByEventParameters(String title, String description, String category,
+                                        LocalDate eventDate, LocalTime eventTime, String location,
+                                        Integer maxParticipants, Pageable pageable);
 
     Event createEvent(Event event);
     Event updateEvent(Long id, Event eventDetails);

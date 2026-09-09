@@ -1,4 +1,4 @@
-package com.example.pp_event_website.controller;
+package com.example.pp_event_website.controller.user;
 
 import com.example.pp_event_website.model.User;
 import com.example.pp_event_website.model.Role;
@@ -48,13 +48,13 @@ public class UserController {
             model.addAttribute("users", userService.findAll());
         }
         model.addAttribute("roles", Role.values());
-        return "userList";
+        return "/public/userList";
     }
 
     @PostMapping("/user/add")
     public String createUser(@Valid  @ModelAttribute User user, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return "userList";
+            return "/public/userList";
         }
         userService.createUser(user);
         return "redirect:/user";
@@ -63,7 +63,7 @@ public class UserController {
     @PostMapping("/user/update")
     public String updateUser(@Valid @ModelAttribute User user, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return "userList";
+            return "/public/1userList";
         }
         userService.updateUser(user);
         return "redirect:/user";
