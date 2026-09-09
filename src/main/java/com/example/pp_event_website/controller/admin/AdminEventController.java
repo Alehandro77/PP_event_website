@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -63,11 +64,31 @@ public class AdminEventController {
     public String addEvent(
             @Valid @ModelAttribute("eventModel") Event eventModel,
             BindingResult bindingResult,
-            @PageableDefault(size = 3) Pageable pageable,
-            Model model) {
+            Model model,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) LocalDate eventDate,
+            @RequestParam(required = false) LocalTime eventTime,
+            @RequestParam(required = false) Integer maxParticipants,
+            Pageable pageable
+            ) {
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("eventsPage", eventService.findAll(pageable));
+            Page<Event> eventsPage = eventService.searchByEventParameters(
+                    title, description, category, eventDate, eventTime, location, maxParticipants, pageable
+            );
+            model.addAttribute("eventsPage", eventsPage);
+
+            model.addAttribute("paramTitle", title);
+            model.addAttribute("paramDescription", description);
+            model.addAttribute("paramCategory", category);
+            model.addAttribute("paramLocation", location);
+            model.addAttribute("paramEventDate", eventDate);
+            model.addAttribute("paramEventTime", eventTime);
+            model.addAttribute("paramMaxParticipants", maxParticipants);
+
             return "admin/eventList";
         }
 
@@ -76,8 +97,16 @@ public class AdminEventController {
     }
 
     @PostMapping("/update")
-    public String updateEvent(@Valid @ModelAttribute Event eventModel) {
-        eventService.updateEvent(eventModel.getId(), eventModel);
+    public String updateEvent(@ModelAttribute Event eventModel, RedirectAttributes redirectAttributes) {
+        try {
+            eventService.updateEvent(eventModel.getId(), eventModel);
+            redirectAttributes.addFlashAttribute("successMessage", "Событие успешно обновлено!");
+        }
+
+        catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+
         return "redirect:/admin/events";
     }
 

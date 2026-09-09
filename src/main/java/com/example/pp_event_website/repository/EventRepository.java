@@ -1,9 +1,11 @@
 package com.example.pp_event_website.repository;
 
 import com.example.pp_event_website.model.Event;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -40,7 +42,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     Page<Event> findByMaxParticipants(Integer maxParticipants, Pageable pageable);
     Page<Event> findByCreatedAt(LocalDateTime createdAt, Pageable pageable);
 
-    //SQL-запрос
+    //SQL-запрос на фильтрацию и поиск данных
     @Query("SELECT e FROM Event e WHERE " +
             "(CAST(:title AS string) IS NULL OR LOWER(e.title) LIKE LOWER(CONCAT('%', CAST(:title AS string), '%'))) AND " +
             "(CAST(:description AS string) IS NULL OR LOWER(e.description) LIKE LOWER(CONCAT('%', CAST(:description AS string), '%'))) AND " +
@@ -58,5 +60,28 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             @Param("location") String location,
             @Param("maxParticipants") Integer maxParticipants,
             Pageable pageable
+    );
+
+    //SQL-запрос на изменение данных
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    @Query("UPDATE Event e SET " +
+            "e.title = COALESCE(:title, e.title), " +
+            "e.description = COALESCE(:description, e.description), " +
+            "e.category = COALESCE(:category, e.category), " +
+            "e.eventDate = COALESCE(:eventDate, e.eventDate), " +
+            "e.eventTime = COALESCE(:eventTime, e.eventTime), " +
+            "e.location = COALESCE(:location, e.location), " +
+            "e.maxParticipants = COALESCE(:maxParticipants, e.maxParticipants) " +
+            "WHERE e.id = :id")
+    int updateEventPartial(
+            @Param("id") Long id,
+            @Param("title") String title,
+            @Param("description") String description,
+            @Param("category") String category,
+            @Param("eventDate") LocalDate eventDate,
+            @Param("eventTime") LocalTime eventTime,
+            @Param("location") String location,
+            @Param("maxParticipants") Integer maxParticipants
     );
 }

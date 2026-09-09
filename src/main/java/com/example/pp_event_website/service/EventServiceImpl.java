@@ -160,15 +160,36 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public Event updateEvent(Long id, Event eventDetails) {
-        Event existingEvent = findById(id);
+        if (id == null) {
+            throw new IllegalArgumentException("ID события не может быть пустым!");
+        }
 
-        existingEvent.setTitle(eventDetails.getTitle());
-        existingEvent.setDescription(eventDetails.getDescription());
-        existingEvent.setCategory(eventDetails.getCategory());
-        existingEvent.setEventDate(eventDetails.getEventDate());
-        existingEvent.setEventTime(eventDetails.getEventTime());
-        existingEvent.setLocation(eventDetails.getLocation());
-        existingEvent.setMaxParticipants(eventDetails.getMaxParticipants());
+        Event existingEvent = eventRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Событие с ID " + id + " не найдено!"));
+
+        if (eventDetails.getTitle() != null && !eventDetails.getTitle().isBlank()) {
+            existingEvent.setTitle(eventDetails.getTitle().trim());
+        }
+        if (eventDetails.getDescription() != null && !eventDetails.getDescription().isBlank()) {
+            existingEvent.setDescription(eventDetails.getDescription().trim());
+        }
+        if (eventDetails.getCategory() != null && !eventDetails.getCategory().isBlank()) {
+            existingEvent.setCategory(eventDetails.getCategory().trim());
+        }
+        if (eventDetails.getLocation() != null && !eventDetails.getLocation().isBlank()) {
+            existingEvent.setLocation(eventDetails.getLocation().trim());
+        }
+        if (eventDetails.getEventDate() != null) {
+            existingEvent.setEventDate(eventDetails.getEventDate());
+        }
+        if (eventDetails.getEventTime() != null) {
+            existingEvent.setEventTime(eventDetails.getEventTime());
+        }
+        if (eventDetails.getMaxParticipants() != null) {
+            existingEvent.setMaxParticipants(eventDetails.getMaxParticipants());
+        }
+
+        // 3. Сохраняем обновленный объект
         return eventRepository.save(existingEvent);
     }
 
