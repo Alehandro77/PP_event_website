@@ -43,7 +43,7 @@ public class EventServiceImpl implements EventService {
         return eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Мероприятие с ID " + id + " не найдено"));
     }
 
-    //Поиск с учетом пагинации
+    //Поиск с учетом пагинации по отдельности
     @Override
     public Page<Event> searchByTitle(String title, Pageable pageable) {
         return eventRepository.findByTitleContainingIgnoreCase(title, pageable);
@@ -84,7 +84,7 @@ public class EventServiceImpl implements EventService {
         return eventRepository.findByCreatedAt(created_at, pageable);
     }
 
-    //Методы без пагинации
+    //Методы без пагинации по отдельности
 
     @Override
     public List<Event> findByTitle(String title) {

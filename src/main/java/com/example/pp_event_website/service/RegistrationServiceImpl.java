@@ -7,6 +7,8 @@ import com.example.pp_event_website.repository.EventRepository;
 import com.example.pp_event_website.repository.RegistrationRepository;
 import com.example.pp_event_website.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -127,5 +129,49 @@ public class RegistrationServiceImpl implements RegistrationService{
             throw new EntityNotFoundException("Нельзя удалить: регистрация с ID " + id + " не найдена");
         }
         registrationRepository.deleteById(id);
+    }
+
+    @Override
+    public Page<Registration> searchByParameters(Long userId, Long eventId, String status, Pageable pageable) {
+        return registrationRepository.searchByParameters(userId, eventId, (status != null && !status.isBlank()) ? status.trim() : null, pageable);
+    }
+
+    @Override
+    @Transactional
+    public Registration createRegistration(Long userId, Long eventId, String status) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь с ID " + userId + " не найден"));
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new EntityNotFoundException("Мероприятие с ID " + eventId + " не найдено"));
+
+        if (registrationRepository.findByUserIdAndEventId(user, event).isPresent()) {
+            throw new IllegalStateException("Регистрация этого пользователя на это событие уже существует");
+        }
+
+        Registration r = new Registration();
+        r.setUserId(user);
+        r.setEventId(event);
+        r.setStatus((status == null || status.isBlank()) ? "confirmed" : status.trim());
+        return registrationRepository.save(r);
+    }
+
+    @Override
+    @Transactional
+    public Registration updateRegistration(Long id, Long userId, Long eventId, String status) {
+        Registration existing = getById(id);
+        if (userId != null) {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new EntityNotFoundException("Пользователь с ID " + userId + " не найден"));
+            existing.setUserId(user);
+        }
+        if (eventId != null) {
+            Event event = eventRepository.findById(eventId)
+                    .orElseThrow(() -> new EntityNotFoundException("Мероприятие с ID " + eventId + " не найдено"));
+            existing.setEventId(event);
+        }
+        if (status != null && !status.isBlank()) {
+            existing.setStatus(status.trim());
+        }
+        return registrationRepository.save(existing);
     }
 }

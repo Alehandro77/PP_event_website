@@ -42,7 +42,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     Page<Event> findByMaxParticipants(Integer maxParticipants, Pageable pageable);
     Page<Event> findByCreatedAt(LocalDateTime createdAt, Pageable pageable);
 
-    //SQL-запрос на фильтрацию и поиск данных
+    //SQL-запросы на фильтрацию и поиск данных
     @Query("SELECT e FROM Event e WHERE " +
             "(CAST(:title AS string) IS NULL OR LOWER(e.title) LIKE LOWER(CONCAT('%', CAST(:title AS string), '%'))) AND " +
             "(CAST(:description AS string) IS NULL OR LOWER(e.description) LIKE LOWER(CONCAT('%', CAST(:description AS string), '%'))) AND " +

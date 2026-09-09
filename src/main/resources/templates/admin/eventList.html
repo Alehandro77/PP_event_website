@@ -9,37 +9,42 @@
 <h2>Поиск и фильтрация событий</h2>
 <form th:action="@{/admin/events}" method="get">
     <div>
-        <label for="title">Название:</label>
-        <input type="text" id="title" name="title" th:value="${paramTitle}" placeholder="Название..." />
-
-        <label for="description">Описание:</label>
-        <input type="text" id="description" name="description" th:value="${paramDescription}" placeholder="Описание..." />
-
-        <label for="category">Категория:</label>
-        <input type="text" id="category" name="category" th:value="${paramCategory}" placeholder="Категория..." />
+        <label>Название:
+            <input type="text" name="title" th:value="${paramTitle}" placeholder="Название..." />
+        </label>
+        <label>Описание:
+            <input type="text" name="description" th:value="${paramDescription}" placeholder="Описание..." />
+        </label>
+        <label>Категория:
+            <input type="text" name="category" th:value="${paramCategory}" placeholder="Категория..." />
+        </label>
     </div>
     <br/>
     <div>
-        <label for="location">Локация:</label>
-        <input type="text" id="location" name="location" th:value="${paramLocation}" placeholder="Локация..." />
-
-        <label for="eventDate">Дата:</label>
-        <input type="date" id="eventDate" name="eventDate" th:value="${paramEventDate}" />
-
-        <label for="eventTime">Время:</label>
-        <input type="time" id="eventTime" name="eventTime" th:value="${paramEventTime}" />
-
-        <label for="maxParticipants">Мин. мест:</label>
-        <input type="number" id="maxParticipants" name="maxParticipants" th:value="${paramMaxParticipants}" placeholder="От..." />
+        <label>Локация:
+            <input type="text" name="location" th:value="${paramLocation}" placeholder="Локация..." />
+        </label>
+        <label>Дата:
+            <input type="date" name="eventDate" th:value="${paramEventDate}" />
+        </label>
+        <label>Время:
+            <input type="time" name="eventTime" th:value="${paramEventTime}" />
+        </label>
+        <label>Мин. мест:
+            <input type="number" name="maxParticipants" th:value="${paramMaxParticipants}" placeholder="От..." />
+        </label>
     </div>
     <br/>
     <button type="submit">Найти</button>
-    <a th:href="@{/admin/events}">Сбросить фильтры</a>
+    <a th:href="@{/admin/events}">Сброс</a>
 </form>
 
 <hr/>
 
-<table>
+<div th:if="${errorMessage}" style="color: red; font-weight: bold; margin-bottom: 15px;" th:text="${errorMessage}"></div>
+<div th:if="${successMessage}" style="color: green; font-weight: bold; margin-bottom: 15px;" th:text="${successMessage}"></div>
+
+<table border="1" cellpadding="5">
     <thead>
     <tr>
         <th>ID</th>
@@ -54,15 +59,15 @@
     </thead>
     <tbody>
     <tr th:each="event : ${eventsPage.content}">
-        <td th:text="${event.id}">1</td>
-        <td th:text="${event.title}">Концерт</td>
-        <td th:text="${event.category}">Музыка</td>
-        <td th:text="${event.eventDate}">2026-10-15</td>
-        <td th:text="${event.eventTime}">18:00</td>
-        <td th:text="${event.location}">Москва</td>
-        <td th:text="${event.maxParticipants}">100</td>
+        <td th:text="${event.id}"></td>
+        <td th:text="${event.title}"></td>
+        <td th:text="${event.category}"></td>
+        <td th:text="${event.eventDate}"></td>
+        <td th:text="${event.eventTime}"></td>
+        <td th:text="${event.location}"></td>
+        <td th:text="${event.maxParticipants}"></td>
         <td>
-            <form th:action="@{/admin/events/delete}" method="post">
+            <form th:action="@{/admin/events/delete}" method="post" style="display:inline;">
                 <input type="hidden" name="id" th:value="${event.id}" />
                 <button type="submit">Удалить</button>
             </form>
@@ -71,6 +76,7 @@
     </tbody>
 </table>
 
+<!-- Пагинация в едином стиле -->
 <div th:if="${eventsPage.totalPages > 1}">
     <a th:if="${eventsPage.hasPrevious()}"
        th:href="@{/admin/events(page=${eventsPage.number - 1}, title=${paramTitle}, description=${paramDescription}, category=${paramCategory}, location=${paramLocation}, eventDate=${paramEventDate}, eventTime=${paramEventTime}, maxParticipants=${paramMaxParticipants})}">Назад</a>
@@ -78,7 +84,7 @@
     <span th:each="i : ${#numbers.sequence(0, eventsPage.totalPages - 1)}">
         <a th:href="@{/admin/events(page=${i}, title=${paramTitle}, description=${paramDescription}, category=${paramCategory}, location=${paramLocation}, eventDate=${paramEventDate}, eventTime=${paramEventTime}, maxParticipants=${paramMaxParticipants})}"
            th:text="${i + 1}"
-           th:style="${i == eventsPage.number} ? 'font-weight: bold;' : ''">1</a>
+           th:style="${i == eventsPage.number} ? 'font-weight: bold;' : ''"></a>
     </span>
 
     <a th:if="${eventsPage.hasNext()}"
@@ -87,14 +93,54 @@
 
 <hr/>
 
-<h2>Обновить событие (Заполните только изменяемые поля)</h2>
-<div th:if="${errorMessage}" style="color: red; font-weight: bold; background-color: #ffe6e6; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
-    <p th:text="${errorMessage}"></p>
-</div>
+<h2>Добавить событие</h2>
+<form th:action="@{/admin/events/add}" th:object="${eventModel}" method="post">
+    <div th:if="${#fields.hasErrors('*')}" style="color: red; margin-bottom: 15px;">
+        <p><b>Пожалуйста, исправьте ошибки в форме:</b></p>
+    </div>
 
-<div th:if="${successMessage}" style="color: green; font-weight: bold; background-color: #e6ffe6; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
-    <p th:text="${successMessage}"></p>
-</div>
+    <div>
+        <label>Название:</label>
+        <input type="text" th:field="*{title}" />
+        <span th:if="${#fields.hasErrors('title')}" th:errors="*{title}" style="color: red;"></span>
+    </div>
+    <div>
+        <label>Описание:</label>
+        <textarea th:field="*{description}"></textarea>
+        <span th:if="${#fields.hasErrors('description')}" th:errors="*{description}" style="color: red;"></span>
+    </div>
+    <div>
+        <label>Категория:</label>
+        <input type="text" th:field="*{category}" />
+        <span th:if="${#fields.hasErrors('category')}" th:errors="*{category}" style="color: red;"></span>
+    </div>
+    <div>
+        <label>Дата:</label>
+        <input type="date" th:field="*{eventDate}" />
+        <span th:if="${#fields.hasErrors('eventDate')}" th:errors="*{eventDate}" style="color: red;"></span>
+    </div>
+    <div>
+        <label>Время:</label>
+        <input type="time" th:field="*{eventTime}" />
+        <span th:if="${#fields.hasErrors('eventTime')}" th:errors="*{eventTime}" style="color: red;"></span>
+    </div>
+    <div>
+        <label>Локация:</label>
+        <input type="text" th:field="*{location}" />
+        <span th:if="${#fields.hasErrors('location')}" th:errors="*{location}" style="color: red;"></span>
+    </div>
+    <div>
+        <label>Макс. мест:</label>
+        <input type="number" th:field="*{maxParticipants}" />
+        <span th:if="${#fields.hasErrors('maxParticipants')}" th:errors="*{maxParticipants}" style="color: red;"></span>
+    </div>
+    <br/>
+    <button type="submit">Создать событие</button>
+</form>
+
+<hr/>
+
+<h2>Обновить событие (Заполните только изменяемые поля)</h2>
 <form th:action="@{/admin/events/update}" method="post">
     <div>
         <label>ID изменяемого события:</label>
@@ -128,62 +174,8 @@
         <label>Новое макс. мест:</label>
         <input type="number" name="maxParticipants" placeholder="Оставьте пустым, если не нужно менять" />
     </div>
-    <button type="submit">Обновить</button>
-</form>
-
-<hr/>
-
-<h2>Добавить событие</h2>
-<form th:action="@{/admin/events/add}" th:object="${eventModel}" method="post">
-
-    <div th:if="${#fields.hasErrors('*')}" style="color: red; margin-bottom: 15px;">
-        <p><b>Пожалуйста, исправьте ошибки в форме:</b></p>
-    </div>
-
-    <div>
-        <label>Название:</label>
-        <input type="text" th:field="*{title}" />
-        <span th:if="${#fields.hasErrors('title')}" th:errors="*{title}" style="color: red;"></span>
-    </div>
-
-    <div>
-        <label>Описание:</label>
-        <textarea th:field="*{description}"></textarea>
-        <span th:if="${#fields.hasErrors('description')}" th:errors="*{description}" style="color: red;"></span>
-    </div>
-
-    <div>
-        <label>Категория:</label>
-        <input type="text" th:field="*{category}" />
-        <span th:if="${#fields.hasErrors('category')}" th:errors="*{category}" style="color: red;"></span>
-    </div>
-
-    <div>
-        <label>Дата:</label>
-        <input type="date" th:field="*{eventDate}" />
-        <span th:if="${#fields.hasErrors('eventDate')}" th:errors="*{eventDate}" style="color: red;"></span>
-    </div>
-
-    <div>
-        <label>Время:</label>
-        <input type="time" th:field="*{eventTime}" />
-        <span th:if="${#fields.hasErrors('eventTime')}" th:errors="*{eventTime}" style="color: red;"></span>
-    </div>
-
-    <div>
-        <label>Локация:</label>
-        <input type="text" th:field="*{location}" />
-        <span th:if="${#fields.hasErrors('location')}" th:errors="*{location}" style="color: red;"></span>
-    </div>
-
-    <div>
-        <label>Макс. мест:</label>
-        <input type="number" th:field="*{maxParticipants}" />
-        <span th:if="${#fields.hasErrors('maxParticipants')}" th:errors="*{maxParticipants}" style="color: red;"></span>
-    </div>
-
     <br/>
-    <button type="submit">Создать событие</button>
+    <button type="submit">Обновить</button>
 </form>
 
 </body>

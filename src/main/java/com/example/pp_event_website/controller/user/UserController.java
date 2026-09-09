@@ -65,7 +65,7 @@ public class UserController {
         if (bindingResult.hasErrors()) {
             return "/public/1userList";
         }
-        userService.updateUser(user);
+        userService.updateUser(user.getId(), user);
         return "redirect:/user";
     }
 

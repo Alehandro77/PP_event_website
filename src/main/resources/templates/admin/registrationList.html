@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Управление регистрациями</title>
+</head>
+<body>
+
+<h2>Поиск и фильтрация регистраций</h2>
+<form th:action="@{/admin/registrations}" method="get">
+    <label>Пользователь:
+        <select name="userId">
+            <option value="">— любой —</option>
+            <option th:each="u : ${allUsers}"
+                    th:value="${u.id}"
+                    th:text="${u.name + ' (' + u.email + ')'}"
+                    th:selected="${paramUserId != null and paramUserId == u.id}"></option>
+        </select>
+    </label>
+    <label>Событие:
+        <select name="eventId">
+            <option value="">— любое —</option>
+            <option th:each="e : ${allEvents}"
+                    th:value="${e.id}"
+                    th:text="${e.title}"
+                    th:selected="${paramEventId != null and paramEventId == e.id}"></option>
+        </select>
+    </label>
+    <label>Статус:
+        <input type="text" name="status" th:value="${paramStatus}" placeholder="confirmed / cancelled..."/>
+    </label>
+    <button type="submit">Найти</button>
+    <a th:href="@{/admin/registrations}">Сброс</a>
+</form>
+
+<hr/>
+
+<div th:if="${errorMessage}" style="color:red" th:text="${errorMessage}"></div>
+<div th:if="${successMessage}" style="color:green" th:text="${successMessage}"></div>
+
+<table border="1" cellpadding="5">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Пользователь</th>
+        <th>Email</th>
+        <th>Событие</th>
+        <th>Дата события</th>
+        <th>Статус</th>
+        <th>Дата регистрации</th>
+        <th>Действия</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="r : ${registrationsPage.content}">
+        <td th:text="${r.id}"></td>
+        <td th:text="${r.userId != null ? r.userId.name : '—'}"></td>
+        <td th:text="${r.userId != null ? r.userId.email : '—'}"></td>
+        <td th:text="${r.eventId != null ? r.eventId.title : '—'}"></td>
+        <td th:text="${r.eventId != null ? r.eventId.eventDate : '—'}"></td>
+        <td th:text="${r.status}"></td>
+        <td th:text="${r.registeredAt}"></td>
+        <td>
+            <form th:action="@{/admin/registrations/delete}" method="post" style="display:inline;">
+                <input type="hidden" name="id" th:value="${r.id}"/>
+                <button type="submit">Удалить</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<div th:if="${registrationsPage.totalPages > 1}">
+    <a th:if="${registrationsPage.hasPrevious()}"
+       th:href="@{/admin/registrations(page=${registrationsPage.number - 1}, userId=${paramUserId}, eventId=${paramEventId}, status=${paramStatus})}">Назад</a>
+    <span th:each="i : ${#numbers.sequence(0, registrationsPage.totalPages - 1)}">
+        <a th:href="@{/admin/registrations(page=${i}, userId=${paramUserId}, eventId=${paramEventId}, status=${paramStatus})}"
+           th:text="${i + 1}"
+           th:style="${i == registrationsPage.number} ? 'font-weight: bold;' : ''"></a>
+    </span>
+    <a th:if="${registrationsPage.hasNext()}"
+       th:href="@{/admin/registrations(page=${registrationsPage.number + 1}, userId=${paramUserId}, eventId=${paramEventId}, status=${paramStatus})}">Вперёд</a>
+</div>
+
+<hr/>
+
+<h2>Добавить регистрацию</h2>
+<form th:action="@{/admin/registrations/add}" method="post">
+    <div>
+        <label>Пользователь:</label>
+        <select name="userId" required>
+            <option value="">— выберите —</option>
+            <option th:each="u : ${allUsers}"
+                    th:value="${u.id}"
+                    th:text="${u.name + ' (' + u.email + ')'}"></option>
+        </select>
+    </div>
+    <div>
+        <label>Событие:</label>
+        <select name="eventId" required>
+            <option value="">— выберите —</option>
+            <option th:each="e : ${allEvents}"
+                    th:value="${e.id}"
+                    th:text="${e.title}"></option>
+        </select>
+    </div>
+    <div>
+        <label>Статус:</label>
+        <select name="status">
+            <option value="confirmed">confirmed</option>
+            <option value="pending">pending</option>
+            <option value="cancelled">cancelled</option>
+        </select>
+    </div>
+    <button type="submit">Создать</button>
+</form>
+
+<hr/>
+
+<h2>Обновить регистрацию</h2>
+<form th:action="@{/admin/registrations/update}" method="post">
+    <div><label>ID регистрации:</label> <input type="number" name="id" required/></div>
+    <div>
+        <label>Пользователь:</label>
+        <select name="userId">
+            <option value="">— не менять —</option>
+            <option th:each="u : ${allUsers}"
+                    th:value="${u.id}"
+                    th:text="${u.name + ' (' + u.email + ')'}"></option>
+        </select>
+    </div>
+    <div>
+        <label>Событие:</label>
+        <select name="eventId">
+            <option value="">— не менять —</option>
+            <option th:each="e : ${allEvents}"
+                    th:value="${e.id}"
+                    th:text="${e.title}"></option>
+        </select>
+    </div>
+    <div>
+        <label>Статус:</label>
+        <select name="status">
+            <option value="">— не менять —</option>
+            <option value="confirmed">confirmed</option>
+            <option value="pending">pending</option>
+            <option value="cancelled">cancelled</option>
+        </select>
+    </div>
+    <button type="submit">Обновить</button>
+</form>
+
+</body>
+</html>
