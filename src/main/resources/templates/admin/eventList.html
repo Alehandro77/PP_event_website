@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Управление событиями</title>
+</head>
+<body>
+
+<form th:action="@{/admin/events/filter}" method="get">
+    <label for="title">Поиск по названию:</label>
+    <input type="text" id="title" name="title" th:value="${paramValue}" placeholder="Введите название..." />
+    <button type="submit">Найти</button>
+    <a th:href="@{/admin/events}">Сбросить</a>
+</form>
+
+<hr/>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Название</th>
+        <th>Категория</th>
+        <th>Дата</th>1
+        <th>Локация</th>
+        <th>Действия</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="event : ${eventsPage.content}">
+        <td th:text="${event.id}">1</td>
+        <td th:text="${event.title}">Концерт</td>
+        <td th:text="${event.category}">Музыка</td>
+        <td th:text="${event.eventDate}">2026-10-15</td>
+        <td th:text="${event.location}">Москва</td>
+        <td>
+            <form th:action="@{/admin/events/delete}" method="post">
+                <input type="hidden" name="id" th:value="${event.id}" />
+                <button type="submit">Удалить</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<div th:if="${eventsPage.totalPages > 1}">
+    <a th:if="${eventsPage.hasPrevious()}"
+       th:href="@{/admin/events(page=${eventsPage.number - 1})}">Назад</a>
+
+    <span th:each="i : ${#numbers.sequence(0, eventsPage.totalPages - 1)}">
+            <a th:href="@{/admin/events(page=${i})}"
+               th:text="${i + 1}">1</a>
+        </span>
+
+    <a th:if="${eventsPage.hasNext()}"
+       th:href="@{/admin/events(page=${eventsPage.number + 1})}">Вперед</a>
+</div>
+
+<hr/>
+
+<h2>Добавить событие</h2>
+<form th:action="@{/admin/events/add}" th:object="${eventModel}" method="post">
+    <div>
+        <label>Название:</label>
+        <input type="text" th:field="*{title}" required />
+    </div>
+    <div>
+        <label>Описание:</label>
+        <textarea th:field="*{description}"></textarea>
+    </div>
+    <div>
+        <label>Категория:</label>
+        <input type="text" th:field="*{category}" required />
+    </div>
+    <div>
+        <label>Дата:</label>
+        <input type="date" th:field="*{eventDate}" required />
+    </div>
+    <div>
+        <label>Время:</label>
+        <input type="time" th:field="*{eventTime}" />
+    </div>
+    <div>
+        <label>Локация:</label>
+        <input type="text" th:field="*{location}" required />
+    </div>
+    <div>
+        <label>Макс. мест:</label>
+        <input type="number" th:field="*{maxParticipants}" required />
+    </div>
+    <button type="submit">Создать событие</button>
+</form>
+
+</body>
+</html>
