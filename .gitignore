@@ -1,4 +1,4 @@
 .idea/
 *.iml
 application-local.properties
-./target/
+target/
