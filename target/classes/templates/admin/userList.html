@@ -1,115 +1,64 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Управление пользователями</title>
 </head>
+
 <body>
 
-<h2>Поиск и фильтрация пользователей</h2>
-<form th:action="@{/admin/users}" method="get">
-    <label>Имя:
-        <input type="text" name="name" th:value="${paramName}" />
-    </label>
-    <label>Email:
-        <input type="text" name="email" th:value="${paramEmail}" />
-    </label>
-    <label>Роль:
-        <select name="role">
-            <option value="">— любая —</option>
-            <option th:each="r : ${roles}" th:value="${r}" th:text="${r}"
-                    th:selected="${paramRole != null and paramRole == r.name()}"></option>
-        </select>
-    </label>
-    <button type="submit">Найти</button>
-    <a th:href="@{/admin/users}">Сброс</a>
+<h1>Управление пользователями</h1>
+
+<form method="get" action="/user">
+    <input type="number" placeholder="id пользователя" name="id" required>
+    <input type="submit" value="Найти">
 </form>
 
-<hr/>
+<form method="get" action="/user">
+    <input type="text" placeholder="email пользователя" name="email" required>
+    <input type="submit" value="Найти">
+</form>
 
-<div th:if="${errorMessage}" style="color:red" th:text="${errorMessage}"></div>
-<div th:if="${successMessage}" style="color:green" th:text="${successMessage}"></div>
+<div th:if="${errorMessage}" th:text="${errorMessage}" style="color:red"></div>
+<div th:if="${searchMessage}" th:text="${searchMessage}"></div>
 
-<table border="1" cellpadding="5">
-    <thead>
-    <tr>
-        <th>ID</th><th>Имя</th><th>Email</th><th>Роль</th><th>Регистрация</th><th>Действия</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="u : ${usersPage.content}">
-        <td th:text="${u.id}"></td>
-        <td th:text="${u.name}"></td>
-        <td th:text="${u.email}"></td>
-        <td th:text="${u.role}"></td>
-        <td th:text="${u.registeredAt}"></td>
-        <td>
-            <form th:action="@{/admin/users/delete}" method="post" style="display:inline;">
-                <input type="hidden" name="id" th:value="${u.id}"/>
-                <button type="submit">Удалить</button>
-            </form>
-        </td>
-    </tr>
-    </tbody>
-</table>
+<h2 th:if="${users != null and !users.isEmpty()}">Список пользователей</h2>
 
-<div th:if="${usersPage.totalPages > 1}">
-    <a th:if="${usersPage.hasPrevious()}"
-       th:href="@{/admin/users(page=${usersPage.number - 1}, name=${paramName}, email=${paramEmail}, role=${paramRole})}">Назад</a>
-    <span th:each="i : ${#numbers.sequence(0, usersPage.totalPages - 1)}">
-        <a th:href="@{/admin/users(page=${i}, name=${paramName}, email=${paramEmail}, role=${paramRole})}"
-           th:text="${i + 1}"
-           th:style="${i == usersPage.number} ? 'font-weight: bold;' : ''"></a>
-    </span>
-    <a th:if="${usersPage.hasNext()}"
-       th:href="@{/admin/users(page=${usersPage.number + 1}, name=${paramName}, email=${paramEmail}, role=${paramRole})}">Вперёд</a>
+<div th:if="${users != null and !users.isEmpty()}">
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Имя</th>
+            <th>Email</th>
+            <th>Роль</th>
+            <th>Регистрация</th>
+            <th>Действия</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr  th:each="user : ${users}">
+            <td th:text="${user.id}"></td>
+            <td th:text="${user.name}"></td>
+            <td th:text="${user.email}"></td>
+            <td th:text="${user.role}"></td>
+            <td th:text="${user.registeredAt}"></td>
+            <td>
+                <form th:action="@{/admin/users/update}" method="post">
+                    <input type="hidden" name="id" th:value="${user.id}"/>
+                    <select name="role">
+                        <option th:each="r : ${roles}"
+                                th:value="${r}"
+                                th:text="${r}"
+                                th:selected="${r == user.role}">
+                        </option>
+                    </select>
+                    <button type="submit">Изменить роль</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 </div>
-
-<hr/>
-
-<h2>Добавить пользователя</h2>
-<form th:action="@{/admin/users/add}" th:object="${userModel}" method="post">
-    <div>
-        <label>Имя:</label>
-        <input type="text" th:field="*{name}" />
-        <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="color:red"></span>
-    </div>
-    <div>
-        <label>Email:</label>
-        <input type="email" th:field="*{email}" />
-        <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" style="color:red"></span>
-    </div>
-    <div>
-        <label>Пароль:</label>
-        <input type="password" th:field="*{passwordHash}" />
-        <span th:if="${#fields.hasErrors('passwordHash')}" th:errors="*{passwordHash}" style="color:red"></span>
-    </div>
-    <div>
-        <label>Роль:</label>
-        <select th:field="*{role}">
-            <option th:each="r : ${roles}" th:value="${r}" th:text="${r}"></option>
-        </select>
-    </div>
-    <button type="submit">Создать</button>
-</form>
-
-<hr/>
-
-<h2>Обновить пользователя (заполните только изменяемые поля)</h2>
-<form th:action="@{/admin/users/update}" method="post">
-    <div><label>ID:</label> <input type="number" name="id" required/></div>
-    <div><label>Имя:</label> <input type="text" name="name"/></div>
-    <div><label>Email:</label> <input type="email" name="email"/></div>
-    <div><label>Пароль:</label> <input type="password" name="passwordHash"/></div>
-    <div>
-        <label>Роль:</label>
-        <select name="role">
-            <option value="">— не менять —</option>
-            <option th:each="r : ${roles}" th:value="${r}" th:text="${r}"></option>
-        </select>
-    </div>
-    <button type="submit">Обновить</button>
-</form>
-
 </body>
 </html>

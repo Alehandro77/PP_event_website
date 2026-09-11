@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Вход</title>
+</head>
+<body>
+  <h1>Вход в систему</h1>
+
+  <div th:if="${param.error}" style="color:red">
+    Неверное имя пользователя или пароль
+  </div>
+
+  <div th:if="${param.logout}" style="color:green">
+    Вы вышли из системы
+  </div>
+
+  <div th:if="${param.registered}" style="color:green">
+    Регистрация успешна! Войдите в систему.
+  </div>
+
+  <form method="post" action="/login">
+    <input type="email" name="email" placeholder="Email" required>
+    <input type="password" name="password" placeholder="Пароль" required>
+    <button type="submit" class="btn primary">Войти</button>
+  </form>
+
+  <a href="/register">Нет аккаунта? Зарегистрироваться</a>
+</body>
+</html>

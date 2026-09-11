@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Регистрация</title>
+</head>
+<body>
+  <h1>Регистрация</h1>
+
+  <div th:if="${error}" th:text="${error}" style="color:red"></div>
+
+  <form method="post" action="/register">
+    <input type="text" name="username" placeholder="Имя пользователя" required>
+    <input type="password" name="password" placeholder="Пароль" required>
+    <input type="email" name="email" placeholder="Email" required>
+    <button type="submit">Зарегистрироваться</button>
+  </form>
+
+  <a href="/login">Уже есть аккаунт? Войти</a>
+</body>
+</html>

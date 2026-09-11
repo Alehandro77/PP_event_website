@@ -2,13 +2,12 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Home</title>
+    <title>Главная страница</title>
 </head>
 <body>
-<a href="user">Users</a>
-<!--Пока размещая ссылки на админку тут, позже перенесем, чтоб скрыть доступ обычным смертным-->
-<a href="/admin/events">События</a>
-<a href="/admin/users">Пользователи</a>
-<a href="/admin/registrations">Регистрации</a>1
+<form th:action="@{/logout}" method="post" style="display:inline;">
+    <button type="submit">Выйти</button>
+</form>
+<h1>Вскоре здесь будут ивенты</h1>
 </body>
 </html>

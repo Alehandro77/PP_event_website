@@ -34,7 +34,7 @@ public class AdminUserController {
 
         Page<User> usersPage = userService.searchByUserParameters(name, email, role, pageable);
 
-        model.addAttribute("usersPage", usersPage);
+        model.addAttribute("users", usersPage);
         model.addAttribute("paramName", name);
         model.addAttribute("paramEmail", email);
         model.addAttribute("paramRole", role);
