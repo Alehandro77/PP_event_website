@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div>
+    <h1>Регистрация на событие</h1>
+    <p> Название - <span th:text="${event.title}"></span></p>
+    <p> Описание - <span th:text="${event.description}"></span></p>
+    <p> Дата - <span th:text="${event.eventDate}"></span></p>
+    <p> Время - <span th:text="${event.eventTime}"></span></p>
+    <p> Локация - <span th:text="${event.location}"></span></p>
+    <p> Мест - <span th:text="${event.maxParticipants}"></span></p>
+</div>
+</body>
+</html>

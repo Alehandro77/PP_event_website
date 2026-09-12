@@ -8,6 +8,14 @@
 <form th:action="@{/logout}" method="post" style="display:inline;">
     <button type="submit">Выйти</button>
 </form>
-<h1>Вскоре здесь будут ивенты</h1>
+<li th:each="event : ${events}">
+    <form th:action="@{/user/registerEventController/reg}" method="post">
+        <input type="hidden" name="id" th:value="${event.id}"/>
+        <span th:text="${event.title}"></span>
+        <span th:text="${event.eventDate}"></span>
+        <button type="submit">Посмотреть подробности</button>
+    </form>
+</li>
+</form>
 </body>
 </html>
