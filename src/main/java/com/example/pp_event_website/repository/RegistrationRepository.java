@@ -15,16 +15,18 @@ import java.util.Optional;
 
 @Repository
 public interface RegistrationRepository extends JpaRepository<Registration, Long> {
-    List<Registration> findByUserId(User user);
-    List<Registration> findByEventId(Event event);
+    List<Registration> findByUser(User user);
+    List<Registration> findByEvent(Event event);
     List<Registration> findByStatus(String status);
-    long countByEventIdAndStatus(Event event, String status);
-    Optional<Registration> findByUserIdAndEventId(User user, Event event);
+    long countByEventAndStatus(Event event, String status);
+    Optional<Registration> findByUserAndEvent(User user, Event event);
 
-    //sql-запрос
-    @Query("SELECT r FROM Registration r WHERE " +
-            "(CAST(:userId AS integer) IS NULL OR r.userId.id = :userId) AND " +
-            "(CAST(:eventId AS integer) IS NULL OR r.eventId.id = :eventId) AND " +
+    @Query("SELECT r FROM Registration r " +
+            "JOIN FETCH r.user u " +
+            "JOIN FETCH r.event e " +
+            "WHERE " +
+            "(CAST(:userId AS integer) IS NULL OR u.id = :userId) AND " +
+            "(CAST(:eventId AS integer) IS NULL OR e.id = :eventId) AND " +
             "(CAST(:status AS string) IS NULL OR LOWER(r.status) LIKE LOWER(CONCAT('%', CAST(:status AS string), '%')))")
     Page<Registration> searchByParameters(
             @Param("userId") Long userId,

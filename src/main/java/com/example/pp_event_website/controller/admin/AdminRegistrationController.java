@@ -42,8 +42,6 @@ public class AdminRegistrationController {
         model.addAttribute("paramUserId", userId);
         model.addAttribute("paramEventId", eventId);
         model.addAttribute("paramStatus", status);
-
-        // Списки для селектов — чтобы в шаблоне тянулись значения, а не голые id
         model.addAttribute("allUsers", userService.findAll());
         model.addAttribute("allEvents", eventService.findAll());
 
@@ -51,10 +49,17 @@ public class AdminRegistrationController {
     }
 
     @PostMapping("/add")
-    public String add(@RequestParam Long userId,
-                      @RequestParam Long eventId,
+    public String add(@RequestParam(required = false) Long userId,
+                      @RequestParam(required = false) Long eventId,
                       @RequestParam(required = false) String status,
                       RedirectAttributes redirectAttributes) {
+
+        if (userId == null || eventId == null) {
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Необходимо выбрать пользователя и событие!");
+            return "redirect:/admin/registrations";
+        }
+
         try {
             registrationService.createRegistration(userId, eventId, status);
             redirectAttributes.addFlashAttribute("successMessage", "Регистрация создана!");

@@ -6,6 +6,7 @@ import com.example.pp_event_website.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,9 +17,11 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -88,7 +91,7 @@ public class UserServiceImpl implements UserService {
             existing.setEmail(details.getEmail().trim());
         }
         if (details.getPasswordHash() != null && !details.getPasswordHash().isBlank()) {
-            existing.setPasswordHash(details.getPasswordHash());
+            existing.setPasswordHash(passwordEncoder.encode(details.getPasswordHash()));
         }
         if (details.getRole() != null) {
             existing.setRole(details.getRole());

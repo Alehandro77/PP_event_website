@@ -37,14 +37,14 @@ public class RegistrationServiceImpl implements RegistrationService{
     public List<Registration> getUserRegistrations(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Пользователь с ID " + userId + " не найден"));
-        return registrationRepository.findByUserId(user);
+        return registrationRepository.findByUser(user);
     }
 
     @Override
     public List<Registration> getEventRegistrations(Long eventId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new EntityNotFoundException("Мероприятие с ID " + eventId + " не найдено"));
-        return registrationRepository.findByEventId(event);
+        return registrationRepository.findByEvent(event);
     }
 
     @Override
@@ -62,14 +62,18 @@ public class RegistrationServiceImpl implements RegistrationService{
     public long getTotalParticipants(Long eventId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new EntityNotFoundException("Мероприятие с ID " + eventId + " не найдено"));
-        return registrationRepository.countByEventIdAndStatus(event, "confirmed");
+        return registrationRepository.countByEventAndStatus(event, "confirmed");
     }
 
-    @Override
     public boolean checkAvailableSlots(Long eventId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new EntityNotFoundException("Мероприятие с ID " + eventId + " не найдено"));
-        long registeredCount = registrationRepository.countByEventIdAndStatus(event, "confirmed");
+
+        if (event.getMaxParticipants() == null) {
+            return true;
+        }
+
+        long registeredCount = getTotalParticipants(eventId);
         return registeredCount < event.getMaxParticipants();
     }
 
@@ -77,8 +81,14 @@ public class RegistrationServiceImpl implements RegistrationService{
     public int getFreeSlots(Long eventId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new EntityNotFoundException("Мероприятие с ID " + eventId + " не найдено"));
-        long registeredCount = registrationRepository.countByEventIdAndStatus(event, "confirmed");
-        return event.getMaxParticipants() - (int) registeredCount;
+
+        if (event.getMaxParticipants() == null) {
+            return Integer.MAX_VALUE;
+        }
+
+        long registeredCount = getTotalParticipants(eventId);
+        int freeSlots = event.getMaxParticipants() - (int) registeredCount;
+        return Math.max(0, freeSlots);
     }
 
     @Override
@@ -90,7 +100,7 @@ public class RegistrationServiceImpl implements RegistrationService{
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new EntityNotFoundException("Мероприятие с ID " + eventId + " не найдено"));
 
-        if (registrationRepository.findByUserIdAndEventId(user, event).isPresent()) {
+        if (registrationRepository.findByUserAndEvent(user, event).isPresent()) {
             throw new IllegalStateException("Вы уже зарегистрированы на это мероприятие");
         }
 
@@ -99,8 +109,8 @@ public class RegistrationServiceImpl implements RegistrationService{
         }
 
         Registration registration = new Registration();
-        registration.setUserId(user);
-        registration.setEventId(event);
+        registration.setUser(user);
+        registration.setEvent(event);
         registration.setStatus("confirmed");
 
         return registrationRepository.save(registration);
@@ -144,14 +154,20 @@ public class RegistrationServiceImpl implements RegistrationService{
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new EntityNotFoundException("Мероприятие с ID " + eventId + " не найдено"));
 
-        if (registrationRepository.findByUserIdAndEventId(user, event).isPresent()) {
+        if (registrationRepository.findByUserAndEvent(user, event).isPresent()) {
             throw new IllegalStateException("Регистрация этого пользователя на это событие уже существует");
         }
 
+        String targetStatus = (status == null || status.isBlank()) ? "confirmed" : status.trim().toLowerCase();
+
+        if ("confirmed".equalsIgnoreCase(targetStatus) && !checkAvailableSlots(eventId)) {
+            throw new IllegalStateException("Нельзя создать регистрацию: на мероприятие нет свободных мест");
+        }
+
         Registration r = new Registration();
-        r.setUserId(user);
-        r.setEventId(event);
-        r.setStatus((status == null || status.isBlank()) ? "confirmed" : status.trim());
+        r.setUser(user);
+        r.setEvent(event);
+        r.setStatus(targetStatus);
         return registrationRepository.save(r);
     }
 
@@ -159,19 +175,31 @@ public class RegistrationServiceImpl implements RegistrationService{
     @Transactional
     public Registration updateRegistration(Long id, Long userId, Long eventId, String status) {
         Registration existing = getById(id);
+
+        Long targetEventId = (eventId != null) ? eventId : existing.getEvent().getId();
+        String targetStatus = (status != null && !status.isBlank()) ? status.trim().toLowerCase() : existing.getStatus();
+
+        boolean isBecomingConfirmed = "confirmed".equalsIgnoreCase(targetStatus) && !"confirmed".equalsIgnoreCase(existing.getStatus());
+        boolean isEventChanged = eventId != null && !eventId.equals(existing.getEvent().getId());
+
+        if ((isBecomingConfirmed || isEventChanged) && "confirmed".equalsIgnoreCase(targetStatus)) {
+            if (!checkAvailableSlots(targetEventId)) {
+                throw new IllegalStateException("Нельзя обновить регистрацию: на выбранное мероприятие нет свободных мест");
+            }
+        }
+
         if (userId != null) {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new EntityNotFoundException("Пользователь с ID " + userId + " не найден"));
-            existing.setUserId(user);
+            existing.setUser(user);
         }
         if (eventId != null) {
             Event event = eventRepository.findById(eventId)
                     .orElseThrow(() -> new EntityNotFoundException("Мероприятие с ID " + eventId + " не найдено"));
-            existing.setEventId(event);
+            existing.setEvent(event);
         }
-        if (status != null && !status.isBlank()) {
-            existing.setStatus(status.trim());
-        }
+
+        existing.setStatus(targetStatus);
         return registrationRepository.save(existing);
     }
 }

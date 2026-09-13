@@ -151,7 +151,7 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public Event createEvent(Event event) {
-        if (!eventRepository.findByTitleContainingIgnoreCase(event.getTitle()).isEmpty()) {
+        if (!eventRepository.findByTitle(event.getTitle()).isEmpty()) {
             throw new IllegalArgumentException("Мероприятие с таким названием уже существует");
         }
         return eventRepository.save(event);

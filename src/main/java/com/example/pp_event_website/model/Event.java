@@ -35,7 +35,7 @@ public class Event {
     @Min(value = 1, message = "Кол-во участников должно быть не менне одного человека")
     private Integer maxParticipants;
     private LocalDateTime createdAt;
-    @OneToMany(mappedBy = "eventId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Registration> registrations = new ArrayList<>();
 
     public Event() {}

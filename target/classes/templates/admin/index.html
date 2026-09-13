@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Панель админа</title>
+</head>
+<body>
+<a href="/admin/events">События</a>
+<a href="/admin/users">Пользователи</a>
+<a href="/admin/registrations">Регистрации</a>
+<form th:action="@{/logout}" method="post" style="display:inline;">
+    <button type="submit">Выйти</button>
+</form>
+</body>
+</html>

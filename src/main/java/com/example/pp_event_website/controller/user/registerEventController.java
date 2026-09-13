@@ -1,27 +1,59 @@
 package com.example.pp_event_website.controller.user;
 
-import com.example.pp_event_website.model.Event;
-import com.example.pp_event_website.repository.EventRepository;
+import com.example.pp_event_website.model.User;
+import com.example.pp_event_website.repository.UserRepository;
+import com.example.pp_event_website.service.EventService;
+import com.example.pp_event_website.service.RegistrationService;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequestMapping("user/registerEventController")
+@RequestMapping("/events")
 public class registerEventController {
 
-    private final EventRepository eventRepository;
+    private final EventService eventService;
+    private final RegistrationService registrationService;
+    private final UserRepository userRepository;
 
-    public registerEventController(EventRepository eventRepository) {
-        this.eventRepository = eventRepository;
+    public registerEventController(EventService eventService,
+                                   RegistrationService registrationService,
+                                   UserRepository userRepository) {
+        this.eventService = eventService;
+        this.registrationService = registrationService;
+        this.userRepository = userRepository;
     }
 
-    @PostMapping("/reg")
-    public String reg(Model model, @RequestParam Long id) {
-        Event event = eventRepository.findById(id).get();
+    @PostMapping("/details")
+    public String showDetails(Model model, @RequestParam Long id) {
+        var event = eventService.findById(id);
+        int freeSlots = registrationService.getFreeSlots(id);
+
         model.addAttribute("event", event);
+        model.addAttribute("freeSlots", freeSlots);
+
         return "public/registerEvent";
+    }
+
+    @PostMapping("/register")
+    public String registerForEvent(@RequestParam Long eventId,
+                                   @AuthenticationPrincipal UserDetails userDetails,
+                                   RedirectAttributes redirectAttributes) {
+
+        User currentUser = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
+
+        try {
+            registrationService.registerUser(currentUser.getId(), eventId);
+            redirectAttributes.addFlashAttribute("successMessage", "Вы успешно зарегистрированы!");
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+
+        return "redirect:/";
     }
 }

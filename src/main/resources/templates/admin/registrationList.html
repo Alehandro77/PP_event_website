@@ -35,8 +35,8 @@
 
 <hr/>
 
-<div th:if="${errorMessage}" style="color:red" th:text="${errorMessage}"></div>
-<div th:if="${successMessage}" style="color:green" th:text="${successMessage}"></div>
+<div th:if="${errorMessage}" style="color:red; font-weight:bold;" th:text="${errorMessage}"></div>
+<div th:if="${successMessage}" style="color:green; font-weight:bold;" th:text="${successMessage}"></div>
 
 <table border="1" cellpadding="5">
     <thead>
@@ -54,10 +54,10 @@
     <tbody>
     <tr th:each="r : ${registrationsPage.content}">
         <td th:text="${r.id}"></td>
-        <td th:text="${r.userId != null ? r.userId.name : '—'}"></td>
-        <td th:text="${r.userId != null ? r.userId.email : '—'}"></td>
-        <td th:text="${r.eventId != null ? r.eventId.title : '—'}"></td>
-        <td th:text="${r.eventId != null ? r.eventId.eventDate : '—'}"></td>
+        <td th:text="${r.user != null ? r.user.name : '—'}"></td>
+        <td th:text="${r.user != null ? r.user.email : '—'}"></td>
+        <td th:text="${r.event != null ? r.event.title : '—'}"></td>
+        <td th:text="${r.event != null ? r.event.eventDate : '—'}"></td>
         <td th:text="${r.status}"></td>
         <td th:text="${r.registeredAt}"></td>
         <td>
@@ -89,7 +89,7 @@
     <div>
         <label>Пользователь:</label>
         <select name="userId" required>
-            <option value="">— выберите —</option>
+            <option value="" disabled selected>— выберите пользователя —</option>
             <option th:each="u : ${allUsers}"
                     th:value="${u.id}"
                     th:text="${u.name + ' (' + u.email + ')'}"></option>
@@ -98,7 +98,7 @@
     <div>
         <label>Событие:</label>
         <select name="eventId" required>
-            <option value="">— выберите —</option>
+            <option value="" disabled selected>— выберите событие —</option>
             <option th:each="e : ${allEvents}"
                     th:value="${e.id}"
                     th:text="${e.title}"></option>

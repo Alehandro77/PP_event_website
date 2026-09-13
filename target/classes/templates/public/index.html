@@ -1,21 +1,30 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Главная страница</title>
 </head>
 <body>
+
 <form th:action="@{/logout}" method="post" style="display:inline;">
     <button type="submit">Выйти</button>
 </form>
-<li th:each="event : ${events}">
-    <form th:action="@{/user/registerEventController/reg}" method="post">
-        <input type="hidden" name="id" th:value="${event.id}"/>
-        <span th:text="${event.title}"></span>
-        <span th:text="${event.eventDate}"></span>
-        <button type="submit">Посмотреть подробности</button>
-    </form>
-</li>
-</form>
+
+<h2>Список событий</h2>
+
+<div th:if="${errorMessage}" style="color:red; font-weight:bold;" th:text="${errorMessage}"></div>
+<div th:if="${successMessage}" style="color:green; font-weight:bold;" th:text="${successMessage}"></div>
+
+<ul>
+    <li th:each="event : ${events}">
+        <form th:action="@{/events/details}" method="post">
+            <input type="hidden" name="id" th:value="${event.id}"/>
+            <span th:text="${event.title}"></span>
+            <span th:text="${event.eventDate}"></span>
+            <button type="submit">Посмотреть подробности</button>
+        </form>
+    </li>
+</ul>
+
 </body>
 </html>
