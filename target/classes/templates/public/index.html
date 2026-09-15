@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Главная страница</title>
@@ -27,6 +29,10 @@
 </ul>
 
 <a href="/user/profile">Профиль</a>
+
+<div th:if="${user != null and user.role != null and user.role.name() == 'ADMIN'}">
+    <a href="/admin/">Админ панель</a>
+</div>
 
 </body>
 </html>
