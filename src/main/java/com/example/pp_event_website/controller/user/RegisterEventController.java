@@ -14,13 +14,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/events")
-public class registerEventController {
+public class RegisterEventController {
 
     private final EventService eventService;
     private final RegistrationService registrationService;
     private final UserRepository userRepository;
 
-    public registerEventController(EventService eventService,
+    public RegisterEventController(EventService eventService,
                                    RegistrationService registrationService,
                                    UserRepository userRepository) {
         this.eventService = eventService;

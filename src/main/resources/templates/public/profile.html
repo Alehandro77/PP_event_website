@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Профиль</title>
+</head>
+<body>
+<h1>Здравствуйте, <span th:text="${user.name}"></span></h1>
+
+<h2 th:if="${events == null or events.isEmpty()}">Вы не зарегистрировались ни на одно событие</h2>
+<h2 th:if="${events != null and !events.isEmpty()}">Вы зарегистрировались на следующие события:</h2>
+
+<div>
+    <ul th:each="event : ${events}">
+        <li th:text="${event.title} + ' в ' + ${event.eventDate} + ', ' + ${event.eventTime}"></li>
+        <form th:action="@{/user/profile/deleteReg}" method="post">
+            <input type="hidden" name="eventId" th:value="${event.id}">
+            <button type="submit">Убрать регистрацию</button>
+        </form>
+    </ul>
+</div>
+
+</body>
+</html>
