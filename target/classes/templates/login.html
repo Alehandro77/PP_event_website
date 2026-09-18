@@ -1,30 +1,410 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Вход</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Вход — Город N</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f8f9fa;
+      color: #1e1e1e;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* --- Header --- */
+    header {
+      background-color: #ffffff;
+      border-bottom: 1px solid #e9ecef;
+      padding: 12px 40px;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #1e1e1e;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .logo-badge {
+      background-color: #ff3b30;
+      color: white;
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .search-container {
+      flex: 1;
+      max-width: 500px;
+      margin: 0 40px;
+      position: relative;
+    }
+
+    .search-container input {
+      width: 100%;
+      padding: 8px 16px 8px 36px;
+      border-radius: 20px;
+      border: 1px solid #e0e0e0;
+      background-color: #f8f9fa;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #8c8c8c;
+      font-size: 14px;
+    }
+
+    .btn-header-login {
+      background-color: #ff3b30;
+      color: white;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .nav-categories {
+      display: flex;
+      gap: 20px;
+      list-style: none;
+      font-size: 13px;
+      color: #495057;
+    }
+
+    .nav-categories a {
+      color: #495057;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-categories a:hover {
+      color: #ff3b30;
+    }
+
+    /* --- Main Content --- */
+    .main-container {
+      flex: 1;
+      max-width: 480px;
+      margin: 40px auto 60px;
+      padding: 0 20px;
+      text-align: center;
+    }
+
+    .page-title {
+      font-size: 30px;
+      font-weight: 400;
+      margin-bottom: 8px;
+      font-style: italic;
+      font-family: Georgia, serif;
+    }
+
+    .page-subtitle {
+      font-size: 12px;
+      color: #6c757d;
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+
+    .auth-card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 32px 36px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+      text-align: left;
+    }
+
+    .card-header-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      color: #495057;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-group input:focus {
+      border-color: #ff3b30;
+    }
+
+    .forgot-password-wrap {
+      margin-bottom: 20px;
+    }
+
+    .forgot-password {
+      color: #ff3b30;
+      font-size: 12px;
+      text-decoration: none;
+    }
+
+    .btn-submit {
+      width: 100%;
+      background-color: #ff3b30;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn-submit:hover {
+      background-color: #e03126;
+    }
+
+    .switch-auth {
+      margin-top: 16px;
+      font-size: 12px;
+      color: #6c757d;
+      text-align: center;
+    }
+
+    .switch-auth a {
+      color: #ff3b30;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .legal-disclaimer {
+      margin-top: 24px;
+      font-size: 11px;
+      color: #8c8c8c;
+      line-height: 1.4;
+    }
+
+    .alert-error {
+      color: #ff3b30;
+      font-size: 13px;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .alert-success {
+      color: #2b8a3e;
+      font-size: 13px;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    /* --- Footer --- */
+    footer {
+      background-color: #111111;
+      color: #ffffff;
+      padding: 40px 60px 20px;
+      margin-top: auto;
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 40px;
+    }
+
+    .footer-brand .logo-footer {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+
+    .footer-brand p {
+      font-size: 11px;
+      color: #8c8c8c;
+      max-width: 250px;
+      line-height: 1.5;
+    }
+
+    .footer-columns {
+      display: flex;
+      gap: 60px;
+    }
+
+    .footer-col h4 {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: #8c8c8c;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .footer-col ul {
+      list-style: none;
+    }
+
+    .footer-col ul li {
+      margin-bottom: 8px;
+    }
+
+    .footer-col ul li a {
+      color: #cccccc;
+      text-decoration: none;
+      font-size: 12px;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid #222222;
+      padding-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: #666666;
+    }
+  </style>
 </head>
 <body>
-  <h1>Вход в систему</h1>
 
-  <div th:if="${param.error}" style="color:red">
-    Неверное имя пользователя или пароль
+<!-- Header (Такой же, как на странице регистрации) -->
+<header>
+  <div class="header-top">
+    <a th:href="@{/}" class="logo">
+      ГОРОД N <span class="logo-badge">АФИША</span>
+    </a>
+    <div class="search-container">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Поиск концертов, спектаклей, выставок...">
+    </div>
+    <a th:href="@{/login}" class="btn-header-login">Войти</a>
+  </div>
+  <nav>
+    <ul class="nav-categories">
+      <li><a href="#">Все события</a></li>
+      <li><a href="#">Концерты</a></li>
+      <li><a href="#">Спектакли</a></li>
+      <li><a href="#">Выставки</a></li>
+      <li><a href="#">Кино</a></li>
+      <li><a href="#">Фестивали</a></li>
+      <li><a href="#">Спорт</a></li>
+      <li><a href="#">Детям</a></li>
+    </ul>
+  </nav>
+</header>
+
+<!-- Main Content -->
+<main class="main-container">
+  <h1 class="page-title">Добро пожаловать в Город N</h1>
+  <p class="page-subtitle">Войдите в свой профиль, чтобы покупать билеты на главные события города без комиссии и создавать любимые места в избранном.</p>
+
+  <div class="auth-card">
+    <div class="card-header-title">Вход</div>
+
+    <!-- Уведомления Spring Security -->
+    <div th:if="${param.error}" class="alert-error">
+      Неверный логин или пароль
+    </div>
+    <div th:if="${param.registered}" class="alert-success">
+      Вы успешно зарегистрировались! Войдите в аккаунт.
+    </div>
+
+    <form th:action="@{/login}" method="post">
+      <div class="form-group">
+        <label for="email">Электронная почта</label>
+        <input type="email" id="email" name="email" placeholder="name@example.com" required autofocus>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Пароль</label>
+        <input type="password" id="password" name="password" placeholder="••••••••" required>
+      </div>
+
+      <button type="submit" class="btn-submit">Войти в личный кабинет</button>
+
+      <div class="switch-auth">
+        Нет аккаунта? <a th:href="@{/register}">Зарегистрироваться</a>
+      </div>
+    </form>
   </div>
 
-  <div th:if="${param.logout}" style="color:green">
-    Вы вышли из системы
+  <p class="legal-disclaimer">
+    Авторизуясь на сайте, вы соглашаетесь с правилами Покупателям сервиса «Город N» и соглашаетесь на обработку персональных данных.
+  </p>
+</main>
+
+<!-- Footer (Такой же, как на странице регистрации) -->
+<footer>
+  <div class="footer-content">
+    <div class="footer-brand">
+      <div class="logo-footer">ГОРОД N</div>
+      <p>Независимый городской путеводитель по культурным событиям, местам отдыха и интересным особенностям Города N.</p>
+    </div>
+    <div class="footer-columns">
+      <div class="footer-col">
+        <h4>Афиша</h4>
+        <ul>
+          <li><a href="#">Все события</a></li>
+          <li><a href="#">Концерты</a></li>
+          <li><a href="#">Спектакли</a></li>
+          <li><a href="#">Выставки</a></li>
+          <li><a href="#">Фестивали</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>О проекте</h4>
+        <ul>
+          <li><a href="#">О нас</a></li>
+          <li><a href="#">Контакты</a></li>
+          <li><a href="#">Реклама на сайте</a></li>
+          <li><a href="#">Условия использования</a></li>
+          <li><a href="#">Политика конфиденциальности</a></li>
+        </ul>
+      </div>
+    </div>
   </div>
-
-  <div th:if="${param.registered}" style="color:green">
-    Регистрация успешна! Войдите в систему.
+  <div class="footer-bottom">
+    <div>© 2026 ГОРОД N Афиша. Все права защищены.</div>
   </div>
+</footer>
 
-  <form method="post" action="/login">
-    <input type="email" name="email" placeholder="Email" required>
-    <input type="password" name="password" placeholder="Пароль" required>
-    <button type="submit" class="btn primary">Войти</button>
-  </form>
-
-  <a href="/register">Нет аккаунта? Зарегистрироваться</a>
 </body>
 </html>

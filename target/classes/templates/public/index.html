@@ -1,38 +1,427 @@
 <!DOCTYPE html>
-<html lang="ru"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Главная страница</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Главная — Город N</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+            color: #1e1e1e;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- Header --- */
+        header {
+            background-color: #ffffff;
+            border-bottom: 1px solid #e9ecef;
+            padding: 12px 40px;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #1e1e1e;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .logo-badge {
+            background-color: #ff3b30;
+            color: white;
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 500px;
+            margin: 0 40px;
+            position: relative;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 8px 16px 8px 36px;
+            border-radius: 20px;
+            border: 1px solid #e0e0e0;
+            background-color: #f8f9fa;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8c8c8c;
+            font-size: 14px;
+        }
+
+        .user-profile-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 13px;
+        }
+
+        .user-name-dot {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #1e1e1e;
+            font-weight: 500;
+        }
+
+        .red-dot {
+            width: 6px;
+            height: 6px;
+            background-color: #ff3b30;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .profile-link {
+            color: #6c757d;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .profile-link:hover {
+            color: #ff3b30;
+        }
+
+        .btn-header-login {
+            background-color: #ff3b30;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .nav-categories {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+            font-size: 13px;
+        }
+
+        .nav-categories a {
+            color: #495057;
+            text-decoration: none;
+        }
+
+        .nav-categories a.active {
+            color: #ff3b30;
+            font-weight: 600;
+        }
+
+        .main-container {
+            flex: 1;
+            max-width: 1200px;
+            width: 100%;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: 400;
+            font-style: italic;
+            font-family: Georgia, serif;
+        }
+
+        .section-subtitle {
+            font-size: 13px;
+            color: #6c757d;
+            margin-top: 4px;
+        }
+
+        .view-all-link {
+            color: #1e1e1e;
+            font-size: 13px;
+            text-decoration: none;
+        }
+
+        .empty-state {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 60px 20px;
+            text-align: center;
+            border: 1px dashed #e0e0e0;
+            margin-bottom: 60px;
+        }
+
+        .empty-state-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+        }
+
+        .empty-state-desc {
+            font-size: 13px;
+            color: #8c8c8c;
+        }
+
+        .subscribe-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 32px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+            margin-bottom: 60px;
+        }
+
+        .subscribe-info h3 {
+            font-size: 20px;
+            font-weight: 400;
+            font-style: italic;
+            font-family: Georgia, serif;
+            margin-bottom: 6px;
+        }
+
+        .subscribe-info p {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .subscribe-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .subscribe-form input {
+            padding: 10px 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 13px;
+            width: 260px;
+            outline: none;
+        }
+
+        .btn-subscribe {
+            background-color: #1e1e1e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        footer {
+            background-color: #111111;
+            color: #ffffff;
+            padding: 40px 60px 20px;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+        }
+
+        .footer-brand .logo-footer {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .footer-brand p {
+            font-size: 11px;
+            color: #8c8c8c;
+            max-width: 250px;
+            line-height: 1.5;
+        }
+
+        .footer-columns {
+            display: flex;
+            gap: 60px;
+        }
+
+        .footer-col h4 {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #8c8c8c;
+            margin-bottom: 12px;
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col ul li {
+            margin-bottom: 8px;
+        }
+
+        .footer-col ul li a {
+            color: #cccccc;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #222222;
+            padding-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #666666;
+        }
+    </style>
 </head>
 <body>
 
-<form th:action="@{/logout}" method="post" style="display:inline;">
-    <button type="submit">Выйти</button>
-</form>
+<header>
+    <div class="header-top">
+        <a th:href="@{/}" class="logo">
+            ГОРОД N <span class="logo-badge">АФИША</span>
+        </a>
 
-<h2>Список событий</h2>
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" placeholder="Поиск концертов, спектаклей, выставок...">
+        </div>
 
-<div th:if="${errorMessage}" style="color:red; font-weight:bold;" th:text="${errorMessage}"></div>
-<div th:if="${successMessage}" style="color:green; font-weight:bold;" th:text="${successMessage}"></div>
+        <!--голова для юзера-->
+        <div th:if="${user != null}" class="user-profile-header">
+            <div class="user-name-dot">
+                <span class="red-dot"></span>
+                <span th:text="${user.name}">Александр</span>
+            </div>
 
-<ul>
-    <li th:each="event : ${events}">
-        <form th:action="@{/events/details}" method="post">
-            <input type="hidden" name="id" th:value="${event.id}"/>
-            <span th:text="${event.title}"></span>
-            <span th:text="${event.eventDate}"></span>
-            <button type="submit">Посмотреть подробности</button>
+            <a th:if="${user.role.name() == 'ADMIN'}"
+               th:href="@{/admin/}"
+               class="profile-link"
+               style="color: #ff3b30; font-weight: 600;">
+                Админ-панель
+            </a>
+
+            <a th:if="${user.role.name() == 'USER'}" th:href="@{/user/profile}" class="profile-link">Личный кабинет</a>
+            <form th:action="@{/logout}" method="post" style="display:inline;">
+                <button type="submit" class="profile-link" style="background:none;border:none;cursor:pointer;">Выход</button>
+            </form>
+        </div>
+
+        <!--голова для гостя-->
+        <a th:if="${user == null}" th:href="@{/login}" class="btn-header-login">Войти</a>
+    </div>
+
+    <nav>
+        <ul class="nav-categories">
+            <li><a href="#" class="active">Все события</a></li>
+            <li><a href="#">Концерты</a></li>
+            <li><a href="#">Спектакли</a></li>
+            <li><a href="#">Выставки</a></li>
+            <li><a href="#">Кино</a></li>
+            <li><a href="#">Фестивали</a></li>
+            <li><a href="#">Спорт</a></li>
+            <li><a href="#">Детям</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main class="main-container">
+    <div class="section-header">
+        <div>
+            <h1 class="section-title">Ближайшие мероприятия</h1>
+            <p class="section-subtitle">Планы на субботу и воскресенье, 14–15 июня</p>
+        </div>
+        <a href="#" class="view-all-link">Все события в выходные &rsaquo;</a>
+    </div>
+
+    <!--заглушка-->
+    <div th:if="${#lists.isEmpty(events)}" class="empty-state">
+        <div class="empty-state-title">Мероприятия не найдены</div>
+        <div class="empty-state-desc">В ближайшее время нет запланированных событий. Следите за обновлениями!</div>
+    </div>
+
+    <!--окошечко с подпсикой-->
+    <div th:if="${user == null}" class="subscribe-card">
+        <div class="subscribe-info">
+            <h3>Будьте в курсе главных событий</h3>
+            <p>Раз в неделю присылаем дайджест лучших культурных событий Города N. Никакого спама.</p>
+        </div>
+        <form class="subscribe-form" onsubmit="event.preventDefault();">
+            <input type="email" placeholder="Ваш e-mail" required>
+            <button type="submit" class="btn-subscribe">Подписаться</button>
         </form>
-    </li>
-</ul>
+    </div>
+</main>
 
-<a href="/user/profile">Профиль</a>
-
-<div th:if="${user != null and user.role != null and user.role.name() == 'ADMIN'}">
-    <a href="/admin/">Админ панель</a>
-</div>
+<!-- Footer -->
+<footer>
+    <div class="footer-content">
+        <div class="footer-brand">
+            <div class="logo-footer">ГОРОД N</div>
+            <p>Независимый городской путеводитель по культурным событиям, местам отдыха и интересным особенностям Города N.</p>
+        </div>
+        <div class="footer-columns">
+            <div class="footer-col">
+                <h4>Афиша</h4>
+                <ul>
+                    <li><a href="#">Все события</a></li>
+                    <li><a href="#">Концерты</a></li>
+                    <li><a href="#">Спектакли</a></li>
+                    <li><a href="#">Выставки</a></li>
+                    <li><a href="#">Фестивали</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>О проекте</h4>
+                <ul>
+                    <li><a href="#">О нас</a></li>
+                    <li><a href="#">Контакты</a></li>
+                    <li><a href="#">Реклама на сайте</a></li>
+                    <li><a href="#">Условия использования</a></li>
+                    <li><a href="#">Политика конфиденциальности</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <div>© 2026 ГОРОД N Афиша. Все права защищены.</div>
+    </div>
+</footer>
 
 </body>
 </html>

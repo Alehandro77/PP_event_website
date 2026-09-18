@@ -1,10 +1,204 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Нет доступа — Город N</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+            color: #1c1c1e;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #ffffff;
+            border-bottom: 1px solid #e5e5ea;
+            padding: 14px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .logo {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: #1c1c1e;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-badge {
+            background-color: #1c1c1e;
+            color: white;
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 16px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #636366;
+            font-size: 13px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #1c1c1e;
+        }
+
+        .search-bar {
+            position: relative;
+            flex: 0 1 320px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 8px 12px 8px 32px;
+            border-radius: 8px;
+            border: 1px solid #e5e5ea;
+            background-color: #f2f2f7;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            color: #8e8e93;
+        }
+
+        .btn-login {
+            background-color: #ff3b19;
+            color: white;
+            padding: 8px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-login:hover {
+            background-color: #e03215;
+        }
+
+        .main-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .error-card {
+            text-align: center;
+            max-width: 440px;
+        }
+
+        .error-title {
+            font-size: 36px;
+            font-weight: 800;
+            letter-spacing: -0.8px;
+            margin-bottom: 12px;
+            color: #1c1c1e;
+        }
+
+        .error-description {
+            font-size: 14px;
+            color: #8e8e93;
+            line-height: 1.5;
+            margin-bottom: 28px;
+        }
+
+        .btn-back {
+            display: inline-block;
+            background-color: #1c1c1e;
+            color: #ffffff;
+            padding: 12px 28px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+
+        .btn-back:hover {
+            opacity: 0.85;
+        }
+    </style>
 </head>
 <body>
-    <h1>У вас нет прав доступа к странице</h1>
+
+<header class="header">
+    <div class="header-left">
+        <a href="/" class="logo">
+            ГОРОД N <span class="logo-badge">АФИША</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="#">Все события</a></li>
+            <li><a href="#">Концерты</a></li>
+            <li><a href="#">Спектакли</a></li>
+            <li><a href="#">Выставки</a></li>
+            <li><a href="#">Кино</a></li>
+            <li><a href="#">Фестивали</a></li>
+            <li><a href="#">Спорт</a></li>
+            <li><a href="#">Детям</a></li>
+        </ul>
+    </div>
+
+    <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" placeholder="Поиск концертов, спектаклей, выставок...">
+    </div>
+
+    <a href="/login" class="btn-login">Войти</a>
+</header>
+
+<main class="main-container">
+    <div class="error-card">
+        <h1 class="error-title">Нет доступа</h1>
+        <p class="error-description">
+            Вы пытаетесь войти на недоступную вам страницу. Вернитесь назад.
+        </p>
+        <a href="javascript:history.back()" class="btn-back">Вернуться назад</a>
+    </div>
+</main>
+
 </body>
 </html>
