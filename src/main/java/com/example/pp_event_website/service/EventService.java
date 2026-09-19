@@ -34,6 +34,7 @@ public interface EventService {
     List<Event> findByLocation(String location);
     List<Event> findByMaxParticipants(Integer maxParticipants);
     List<Event> findByCreatedAt(LocalDateTime createdAt);
+    List<Event> searchEvents(String keyword, String category);
 
     //Поиск с помощью sql-запроса
     Page<Event> searchByEventParameters(String title, String description, String category,

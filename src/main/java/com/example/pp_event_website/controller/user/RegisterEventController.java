@@ -39,10 +39,14 @@ public class RegisterEventController {
         return "public/registerEvent";
     }
 
-    @PostMapping("/register")
-    public String registerForEvent(@RequestParam Long eventId,
+    @PostMapping("/{eventId}/register")
+    public String registerForEvent(@PathVariable("eventId") Long eventId,
                                    @AuthenticationPrincipal UserDetails userDetails,
                                    RedirectAttributes redirectAttributes) {
+
+        if (userDetails == null) {
+            return "redirect:/login";
+        }
 
         User currentUser = userRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
@@ -54,6 +58,6 @@ public class RegisterEventController {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
 
-        return "redirect:/";
+        return "redirect:/public/events/" + eventId;
     }
 }

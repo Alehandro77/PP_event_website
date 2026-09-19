@@ -282,89 +282,6 @@
             color: #ff3b19;
             font-weight: 700;
         }
-
-        .dashboard-columns {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 20px;
-        }
-
-        .dashboard-box {
-            background: #ffffff;
-            border-radius: 12px;
-            border: 1px solid #e5e5ea;
-            overflow: hidden;
-        }
-
-        .box-header {
-            padding: 16px 20px;
-            border-bottom: 1px solid #e5e5ea;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .box-title {
-            font-size: 14px;
-            font-weight: 700;
-        }
-
-        .box-link {
-            font-size: 12px;
-            color: #ff3b19;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .box-list {
-            list-style: none;
-        }
-
-        .box-item {
-            padding: 14px 20px;
-            border-bottom: 1px solid #e5e5ea;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .box-item:last-child {
-            border-bottom: none;
-        }
-
-        .item-main {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .item-title {
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .item-sub {
-            font-size: 12px;
-            color: #8e8e93;
-        }
-
-        .badge-role {
-            font-size: 10px;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .badge-role.ADMIN {
-            background: #fff2f1;
-            color: #ff3b19;
-        }
-
-        .badge-role.USER {
-            background: #f2f2f7;
-            color: #1c1c1e;
-        }
     </style>
 </head>
 <body>
@@ -393,6 +310,12 @@
                 Пользователи
             </a>
         </li>
+        <li>
+            <a th:href="@{/admin/registrations}">
+                <span class="icon">📝</span>
+                Регистрации
+            </a>
+        </li>
     </ul>
 
     <div class="sidebar-footer">
@@ -410,7 +333,6 @@
     <div class="top-bar">
         <div class="page-title">Панель управления</div>
 
-        <!-- Динамическое имя текущего авторизованного пользователя -->
         <div class="user-info">
             <div class="user-details">
                 <div class="user-name"
@@ -468,6 +390,14 @@
             <div class="nav-card-info">
                 <h3>Управление пользователями</h3>
                 <p>Просмотр участников, смена ролей и удаление</p>
+            </div>
+            <div class="nav-card-arrow">→</div>
+        </a>
+
+        <a th:href="@{/admin/registrations}" class="nav-card">
+            <div class="nav-card-info">
+                <h3>Управление регистрациями</h3>
+                <p>Фильтрация, добавление и изменение статусов записей</p>
             </div>
             <div class="nav-card-arrow">→</div>
         </a>

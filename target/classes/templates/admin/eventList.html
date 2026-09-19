@@ -1,604 +1,320 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Управление мероприятиями — Админ-панель</title>
+    <title>Управление событиями — Админ-панель</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background-color: #f5f5f7; color: #1c1c1e; display: flex; min-height: 100vh; }
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f5f5f7;
-            color: #1c1c1e;
-            display: flex;
-            min-height: 100vh;
-        }
+        /* Sidebar Styles */
+        .sidebar { width: 250px; background-color: #ffffff; border-right: 1px solid #e5e5ea; padding: 24px 16px; display: flex; flex-direction: column; position: fixed; height: 100vh; overflow-y: auto; }
+        .sidebar-logo { font-size: 18px; font-weight: 800; color: #1c1c1e; text-decoration: none; display: flex; align-items: center; gap: 8px; margin-bottom: 32px; padding: 0 12px; }
+        .sidebar-badge { background-color: #ff3b19; color: white; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 700; }
+        .sidebar-nav { list-style: none; flex: 1; display: flex; flex-direction: column; gap: 4px; }
+        .sidebar-nav a { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 10px; text-decoration: none; color: #636366; font-size: 14px; font-weight: 500; }
+        .sidebar-nav a:hover { background-color: #f2f2f7; color: #1c1c1e; }
+        .sidebar-nav a.active { background-color: #fff2f1; color: #ff3b19; font-weight: 600; }
+        .sidebar-footer { border-top: 1px solid #e5e5ea; padding-top: 16px; margin-top: auto; }
+        .logout-btn { width: 100%; text-align: left; background: none; border: none; padding: 12px 16px; border-radius: 10px; color: #636366; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 12px; }
 
-        /* --- Sidebar --- */
-        .sidebar {
-            width: 250px;
-            background-color: #ffffff;
-            border-right: 1px solid #e5e5ea;
-            padding: 24px 16px;
-            display: flex;
-            flex-direction: column;
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-        }
+        /* Main Content */
+        .main-content { flex: 1; margin-left: 250px; padding: 32px 40px; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+        .page-title { font-size: 14px; font-weight: 500; color: #8e8e93; }
+        .user-info { display: flex; align-items: center; gap: 12px; }
+        .user-avatar { width: 36px; height: 36px; border-radius: 50%; background-color: #ff3b19; color: white; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
+        .user-details { text-align: right; }
+        .user-name { font-size: 13px; font-weight: 600; }
+        .user-role { font-size: 11px; color: #8e8e93; }
 
-        .sidebar-logo {
-            font-size: 18px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            color: #1c1c1e;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 32px;
-            padding: 0 12px;
-        }
+        .content-header { margin-bottom: 24px; }
+        .content-title { font-size: 24px; font-weight: 800; }
 
-        .sidebar-badge {
-            background-color: #ff3b19;
-            color: white;
-            font-size: 9px;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
+        /* Cards & Form Elements */
+        .card { background: #ffffff; border-radius: 12px; padding: 24px; border: 1px solid #e5e5ea; margin-bottom: 28px; }
+        .card-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: #1c1c1e; }
 
-        .sidebar-nav {
-            list-style: none;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
+        .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group label { font-size: 12px; font-weight: 600; color: #636366; }
 
-        .sidebar-nav a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            border-radius: 10px;
-            text-decoration: none;
-            color: #636366;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
+        .form-control { padding: 10px 14px; border: 1px solid #e5e5ea; border-radius: 8px; font-size: 14px; outline: none; background: #fafafa; font-family: inherit; }
+        .form-control:focus { border-color: #ff3b19; background: #ffffff; }
+        textarea.form-control { resize: vertical; min-height: 80px; }
 
-        .sidebar-nav a:hover {
-            background-color: #f2f2f7;
-            color: #1c1c1e;
-        }
+        .form-actions { display: flex; gap: 10px; align-items: center; margin-top: 8px; }
+        .btn-submit { padding: 10px 20px; background-color: #1c1c1e; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; height: 40px; }
+        .btn-submit:hover { background-color: #2c2c2e; }
+        .btn-primary { background-color: #ff3b19; }
+        .btn-primary:hover { background-color: #e03215; }
+        .btn-reset { padding: 10px 18px; background-color: #f2f2f7; color: #636366; border-radius: 8px; font-size: 14px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; height: 40px; font-weight: 500; }
 
-        .sidebar-nav a.active {
-            background-color: #fff2f1;
-            color: #ff3b19;
-            font-weight: 600;
-        }
+        .btn-delete { padding: 6px 12px; background-color: #fff0f0; color: #ff3b30; border: 1px solid #ffe5e5; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+        .btn-delete:hover { background-color: #ff3b30; color: white; }
 
-        .sidebar-footer {
-            border-top: 1px solid #e5e5ea;
-            padding-top: 16px;
-            margin-top: auto;
-        }
+        /* Tables */
+        .table-container { background: #ffffff; border-radius: 12px; border: 1px solid #e5e5ea; overflow: hidden; margin-bottom: 24px; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        thead { background-color: #fafafa; border-bottom: 1px solid #e5e5ea; }
+        th { padding: 14px 20px; font-size: 12px; font-weight: 600; color: #8e8e93; }
+        td { padding: 16px 20px; font-size: 13px; color: #1c1c1e; border-bottom: 1px solid #e5e5ea; vertical-align: middle; }
 
-        .logout-btn {
-            width: 100%;
-            text-align: left;
-            background: none;
-            border: none;
-            padding: 12px 16px;
-            border-radius: 10px;
-            color: #636366;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transition: all 0.2s;
-        }
+        /* Pagination */
+        .pagination { display: flex; gap: 6px; align-items: center; justify-content: center; margin-bottom: 32px; }
+        .pagination a { padding: 8px 14px; background: #ffffff; border: 1px solid #e5e5ea; border-radius: 8px; color: #1c1c1e; text-decoration: none; font-size: 13px; font-weight: 500; }
+        .pagination a.active { background-color: #ff3b19; color: white; border-color: #ff3b19; font-weight: 700; }
 
-        .logout-btn:hover {
-            background-color: #fff2f1;
-            color: #ff3b19;
-        }
-
-        /* --- Main Content --- */
-        .main-content {
-            flex: 1;
-            margin-left: 250px;
-            padding: 32px 40px;
-        }
-
-        /* Top Bar */
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 28px;
-        }
-
-        .page-title {
-            font-size: 14px;
-            font-weight: 500;
-            color: #8e8e93;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .user-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background-color: #ff3b19;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            font-weight: 700;
-        }
-
-        .user-details {
-            text-align: right;
-        }
-
-        .user-name {
-            font-size: 13px;
-            font-weight: 600;
-            color: #1c1c1e;
-        }
-
-        .user-role {
-            font-size: 11px;
-            color: #8e8e93;
-        }
-
-        /* Content Header */
-        .content-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .content-title {
-            font-size: 24px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-        }
-
-        .btn-create {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background-color: #ff3b19;
-            color: #ffffff;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: background 0.2s;
-        }
-
-        .btn-create:hover {
-            background-color: #e02f0f;
-        }
-
-        /* --- Search & Filters --- */
-        .search-bar {
-            background: #ffffff;
-            border-radius: 12px;
-            padding: 16px;
-            border: 1px solid #e5e5ea;
-            margin-bottom: 20px;
-        }
-
-        .search-form {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .search-input-wrapper {
-            position: relative;
-            flex: 1;
-        }
-
-        .search-input-wrapper svg {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 16px;
-            height: 16px;
-            color: #8e8e93;
-        }
-
-        .search-form input {
-            width: 100%;
-            padding: 10px 14px 10px 36px;
-            border: 1px solid #e5e5ea;
-            border-radius: 8px;
-            font-size: 14px;
-            outline: none;
-            background: #fafafa;
-            color: #1c1c1e;
-            transition: all 0.2s;
-        }
-
-        .search-form select {
-            padding: 10px 14px;
-            border: 1px solid #e5e5ea;
-            border-radius: 8px;
-            font-size: 14px;
-            outline: none;
-            background: #fafafa;
-            color: #1c1c1e;
-            min-width: 200px;
-            transition: all 0.2s;
-        }
-
-        .search-form input:focus,
-        .search-form select:focus {
-            border-color: #ff3b19;
-            background: #ffffff;
-        }
-
-        .search-form button {
-            padding: 10px 20px;
-            background-color: #1c1c1e;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .search-form button:hover {
-            background-color: #3a3a3c;
-        }
-
-        /* --- Table --- */
-        .table-container {
-            background: #ffffff;
-            border-radius: 12px;
-            border: 1px solid #e5e5ea;
-            overflow: hidden;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-
-        thead {
-            background-color: #fafafa;
-            border-bottom: 1px solid #e5e5ea;
-        }
-
-        th {
-            padding: 14px 20px;
-            font-size: 12px;
-            font-weight: 600;
-            color: #8e8e93;
-        }
-
-        td {
-            padding: 16px 20px;
-            font-size: 13px;
-            color: #1c1c1e;
-            border-bottom: 1px solid #e5e5ea;
-        }
-
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        .category-text {
-            color: #8e8e93;
-        }
-
-        /* Action Buttons */
-        .actions-cell {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 8px;
-        }
-
-        .btn-action {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 6px;
-            border-radius: 6px;
-            color: #8e8e93;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-        }
-
-        .btn-action:hover {
-            background-color: #f2f2f7;
-            color: #1c1c1e;
-        }
-
-        .btn-action.delete:hover {
-            background-color: #fff2f1;
-            color: #ff3b19;
-        }
-
-        .btn-action svg {
-            width: 16px;
-            height: 16px;
-        }
-
-        /* --- Pagination --- */
-        .pagination {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 20px;
-            background-color: #ffffff;
-            border-top: 1px solid #e5e5ea;
-        }
-
-        .pagination-info {
-            font-size: 13px;
-            color: #8e8e93;
-        }
-
-        .pagination-controls {
-            display: flex;
-            gap: 6px;
-        }
-
-        .pagination-controls a,
-        .pagination-controls span {
-            padding: 6px 12px;
-            border: 1px solid #e5e5ea;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 500;
-            background: #ffffff;
-            color: #1c1c1e;
-            text-decoration: none;
-            transition: all 0.2s;
-        }
-
-        .pagination-controls a:hover {
-            background-color: #f2f2f7;
-        }
-
-        .pagination-controls .active {
-            background-color: #ff3b19;
-            color: #ffffff;
-            border-color: #ff3b19;
-        }
-
-        .pagination-controls .disabled {
-            color: #8e8e93;
-            cursor: not-allowed;
-        }
-
-        /* Alerts */
-        .alert {
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .alert-success {
-            background-color: #ebfbee;
-            color: #2b8a3e;
-            border: 1px solid #d3f9d8;
-        }
-
-        .alert-error {
-            background-color: #fff0f0;
-            color: #c92a2a;
-            border: 1px solid #ffe3e3;
-        }
+        /* Alerts & Badges */
+        .alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; }
+        .alert-success { background-color: #ebfbee; color: #2b8a3e; border: 1px solid #d3f9d8; }
+        .alert-error { background-color: #fff0f0; color: #c92a2a; border: 1px solid #ffdeeb; }
+        .field-error { color: #ff3b30; font-size: 11px; margin-top: 2px; }
+        .badge-cat { background-color: #f2f2f7; padding: 4px 8px; border-radius: 6px; font-weight: 600; font-size: 12px; color: #636366; }
     </style>
 </head>
 <body>
 
-<!-- Sidebar -->
 <aside class="sidebar">
     <a th:href="@{/admin/}" class="sidebar-logo">
         ГОРОД N <span class="sidebar-badge">АДМИН</span>
     </a>
-
     <ul class="sidebar-nav">
-        <li>
-            <a th:href="@{/admin/}">
-                <span class="icon">📊</span>
-                Главная
-            </a>
-        </li>
-        <li>
-            <a th:href="@{/admin/events}" class="active">
-                <span class="icon">📅</span>
-                События
-            </a>
-        </li>
-        <li>
-            <a th:href="@{/admin/users}">
-                <span class="icon">👥</span>
-                Пользователи
-            </a>
-        </li>
+        <li><a th:href="@{/admin/}"><span class="icon">📊</span> Главная</a></li>
+        <li><a th:href="@{/admin/events}" class="active"><span class="icon">📅</span> События</a></li>
+        <li><a th:href="@{/admin/users}"><span class="icon">👥</span> Пользователи</a></li>
+        <li><a th:href="@{/admin/registrations}"><span class="icon">📝</span> Регистрации</a></li>
     </ul>
-
     <div class="sidebar-footer">
         <form th:action="@{/logout}" method="post">
-            <button type="submit" class="logout-btn">
-                <span class="icon">🚪</span>
-                Выйти
-            </button>
+            <button type="submit" class="logout-btn"><span class="icon">🚪</span> Выйти</button>
         </form>
     </div>
 </aside>
 
-<!-- Main Content -->
 <main class="main-content">
 
-    <!-- Top Bar -->
     <div class="top-bar">
         <div class="page-title">Админ-панель Город N</div>
-
         <div class="user-info">
             <div class="user-details">
-                <div class="user-name">Илья</div>
+                <div class="user-name" th:text="${currentUser?.name ?: #authentication?.name ?: 'Администратор'}">
+                    Администратор
+                </div>
                 <div class="user-role">Администратор</div>
             </div>
-            <div class="user-avatar">И</div>
+            <div class="user-avatar" th:text="${currentUser?.name != null ? #strings.substring(currentUser.name, 0, 1) : 'А'}">
+                А
+            </div>
         </div>
     </div>
 
-    <!-- Alert Messages -->
-    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+    <!-- Уведомления -->
     <div th:if="${errorMessage}" class="alert alert-error" th:text="${errorMessage}"></div>
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
 
-    <!-- Content Header -->
     <div class="content-header">
-        <h1 class="content-title">Управление мероприятиями</h1>
-        <a th:href="@{/admin/events/create}" class="btn-create">
-            <span>+</span> Создать мероприятие
-        </a>
+        <h1 class="content-title">Управление событиями</h1>
     </div>
 
-    <!-- Search & Filters Bar -->
-    <div class="search-bar">
-        <form th:action="@{/admin/events}" method="get" class="search-form">
-            <div class="search-input-wrapper">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                <input type="text" name="title" placeholder="Поиск по названию..." th:value="${paramTitle}">
+    <!-- Фильтрация и поиск -->
+    <div class="card">
+        <div class="card-title">Фильтр событий</div>
+        <form th:action="@{/admin/events}" method="get">
+            <div class="filter-grid">
+                <div class="form-group">
+                    <label>Название</label>
+                    <input type="text" class="form-control" name="title" th:value="${paramTitle}" placeholder="Название..." />
+                </div>
+                <div class="form-group">
+                    <label>Описание</label>
+                    <input type="text" class="form-control" name="description" th:value="${paramDescription}" placeholder="Описание..." />
+                </div>
+                <div class="form-group">
+                    <label>Категория</label>
+                    <input type="text" class="form-control" name="category" th:value="${paramCategory}" placeholder="Категория..." />
+                </div>
+                <div class="form-group">
+                    <label>Локация</label>
+                    <input type="text" class="form-control" name="location" th:value="${paramLocation}" placeholder="Локация..." />
+                </div>
+                <div class="form-group">
+                    <label>Дата</label>
+                    <input type="date" class="form-control" name="eventDate" th:value="${paramEventDate}" />
+                </div>
+                <div class="form-group">
+                    <label>Время</label>
+                    <input type="time" class="form-control" name="eventTime" th:value="${paramEventTime}" />
+                </div>
+                <div class="form-group">
+                    <label>Мин. мест</label>
+                    <input type="number" class="form-control" name="maxParticipants" th:value="${paramMaxParticipants}" placeholder="От..." />
+                </div>
             </div>
-
-            <select name="category">
-                <option value="">Все категории</option>
-                <option th:each="cat : ${categories}"
-                        th:value="${cat}"
-                        th:text="${cat}"
-                        th:selected="${paramCategory == cat}">Категория</option>
-            </select>
-
-            <button type="submit">Искать</button>
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">Найти</button>
+                <a th:href="@{/admin/events}" class="btn-reset">Сбросить</a>
+            </div>
         </form>
     </div>
 
-    <!-- Table Container -->
-    <div class="table-container">
+    <!-- Таблица событий -->
+    <div class="table-container" th:if="${eventsPage != null and !eventsPage.empty}">
         <table>
             <thead>
             <tr>
+                <th>ID</th>
                 <th>Название</th>
                 <th>Категория</th>
                 <th>Дата</th>
-                <th>Площадка</th>
-                <th>Дата создания</th>
-                <th style="text-align: right;">Действия</th>
+                <th>Время</th>
+                <th>Локация</th>
+                <th>Мест</th>
+                <th>Действия</th>
             </tr>
             </thead>
             <tbody>
-            <!-- Empty state -->
-            <tr th:if="${events == null or events.isEmpty()}">
-                <td colspan="6" style="text-align: center; padding: 40px; color: #8e8e93;">
-                    Мероприятия не найдены
-                </td>
-            </tr>
-
-            <!-- Item loop -->
-            <tr th:each="event : ${events.content}">
-                <td style="font-weight: 600;" th:text="${event.title}">Спектакль «Три Сестры»</td>
-                <td class="category-text" th:text="${event.category != null ? event.category : 'Театр'}">Театр</td>
-                <td th:text="${#temporals.format(event.eventDate, 'dd MMM, HH:mm')}">15 окт, 19:00</td>
-                <td th:text="${event.venue != null ? event.venue : 'Драматический театр'}">Драматический театр</td>
-                <td style="color: #8e8e93;" th:text="${#temporals.format(event.createdAt, 'dd MMM, HH:mm')}">15 окт, 19:00</td>
+            <tr th:each="event : ${eventsPage.content}">
+                <td style="font-weight: 600; color: #8e8e93;" th:text="${'#' + event.id}">#1</td>
+                <td style="font-weight: 600;" th:text="${event.title}">Название</td>
+                <td><span class="badge-cat" th:text="${event.category}">Категория</span></td>
+                <td th:text="${event.eventDate}">2026-10-10</td>
+                <td th:text="${event.eventTime}">18:00</td>
+                <td th:text="${event.location}">Локация</td>
+                <td th:text="${event.maxParticipants}">100</td>
                 <td>
-                    <div class="actions-cell">
-                        <!-- Edit Button -->
-                        <a th:href="@{/admin/events/edit/{id}(id=${event.id})}" class="btn-action" title="Редактировать">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                        </a>
-
-                        <!-- Delete Form Button -->
-                        <form th:action="@{/admin/events/delete}" method="post" style="display: inline;"
-                              onsubmit="return confirm('Вы уверены, что хотите удалить мероприятие?');">
-                            <input type="hidden" name="id" th:value="${event.id}">
-                            <button type="submit" class="btn-action delete" title="Удалить">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                            </button>
-                        </form>
-                    </div>
+                    <form th:action="@{/admin/events/delete}" method="post" style="display:inline;">
+                        <input type="hidden" name="id" th:value="${event.id}" />
+                        <button type="submit" class="btn-delete">Удалить</button>
+                    </form>
                 </td>
             </tr>
             </tbody>
         </table>
-
-        <!-- Pagination -->
-        <div class="pagination" th:if="${events != null and events.totalPages > 0}">
-            <div class="pagination-info">
-                Показано <span th:text="${events.number * events.size + (events.isEmpty() ? 0 : 1)}">1</span>–<span th:text="${events.number * events.size + events.numberOfElements}">6</span> из <span th:text="${events.totalElements}">24</span> мероприятий
-            </div>
-
-            <div class="pagination-controls">
-                <a th:if="${events.hasPrevious()}"
-                   th:href="@{/admin/events(page=${events.number - 1}, size=${events.size}, title=${paramTitle}, category=${paramCategory})}">
-                    Назад
-                </a>
-                <span th:unless="${events.hasPrevious()}" class="disabled">Назад</span>
-
-                <th:block th:if="${events.totalPages > 0}">
-                    <a th:each="i : ${#numbers.sequence(0, events.totalPages - 1)}"
-                       th:href="@{/admin/events(page=${i}, size=${events.size}, title=${paramTitle}, category=${paramCategory})}"
-                       th:text="${i + 1}"
-                       th:classappend="${i == events.number} ? 'active' : ''">1</a>
-                </th:block>
-
-                <a th:if="${events.hasNext()}"
-                   th:href="@{/admin/events(page=${events.number + 1}, size=${events.size}, title=${paramTitle}, category=${paramCategory})}">
-                    Вперед
-                </a>
-                <span th:unless="${events.hasNext()}" class="disabled">Вперед</span>
-            </div>
-        </div>
     </div>
+
+    <div th:if="${eventsPage == null or eventsPage.empty}" style="text-align: center; padding: 40px; background: #ffffff; border-radius: 12px; border: 1px solid #e5e5ea; color: #8e8e93; margin-bottom: 28px;">
+        События не найдены.
+    </div>
+
+    <!-- Пагинация -->
+    <div class="pagination" th:if="${eventsPage != null and eventsPage.totalPages > 1}">
+        <a th:if="${eventsPage.hasPrevious()}"
+           th:href="@{/admin/events(page=${eventsPage.number - 1}, title=${paramTitle}, description=${paramDescription}, category=${paramCategory}, location=${paramLocation}, eventDate=${paramEventDate}, eventTime=${paramEventTime}, maxParticipants=${paramMaxParticipants})}">← Назад</a>
+
+        <span th:each="i : ${#numbers.sequence(0, eventsPage.totalPages - 1)}">
+            <a th:href="@{/admin/events(page=${i}, title=${paramTitle}, description=${paramDescription}, category=${paramCategory}, location=${paramLocation}, eventDate=${paramEventDate}, eventTime=${paramEventTime}, maxParticipants=${paramMaxParticipants})}"
+               th:text="${i + 1}"
+               th:classappend="${i == eventsPage.number} ? 'active' : ''"></a>
+        </span>
+
+        <a th:if="${eventsPage.hasNext()}"
+           th:href="@{/admin/events(page=${eventsPage.number + 1}, title=${paramTitle}, description=${paramDescription}, category=${paramCategory}, location=${paramLocation}, eventDate=${paramEventDate}, eventTime=${paramEventTime}, maxParticipants=${paramMaxParticipants})}">Вперед →</a>
+    </div>
+
+    <!-- Форма создания -->
+    <div class="card">
+        <div class="card-title">Добавить новое событие</div>
+        <form th:action="@{/admin/events/add}" th:object="${eventModel}" method="post">
+            <div th:if="${#fields.hasErrors('*')}" class="alert alert-error">
+                Пожалуйста, исправьте ошибки в форме ниже.
+            </div>
+
+            <div class="filter-grid">
+                <div class="form-group">
+                    <label>Название</label>
+                    <input type="text" class="form-control" th:field="*{title}" required />
+                    <span class="field-error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span>
+                </div>
+                <div class="form-group">
+                    <label>Категория</label>
+                    <input type="text" class="form-control" th:field="*{category}" required />
+                    <span class="field-error" th:if="${#fields.hasErrors('category')}" th:errors="*{category}"></span>
+                </div>
+                <div class="form-group">
+                    <label>Дата</label>
+                    <input type="date" class="form-control" th:field="*{eventDate}" required />
+                    <span class="field-error" th:if="${#fields.hasErrors('eventDate')}" th:errors="*{eventDate}"></span>
+                </div>
+                <div class="form-group">
+                    <label>Время</label>
+                    <input type="time" class="form-control" th:field="*{eventTime}" required />
+                    <span class="field-error" th:if="${#fields.hasErrors('eventTime')}" th:errors="*{eventTime}"></span>
+                </div>
+                <div class="form-group">
+                    <label>Локация</label>
+                    <input type="text" class="form-control" th:field="*{location}" required />
+                    <span class="field-error" th:if="${#fields.hasErrors('location')}" th:errors="*{location}"></span>
+                </div>
+                <div class="form-group">
+                    <label>Макс. мест</label>
+                    <input type="number" class="form-control" th:field="*{maxParticipants}" required />
+                    <span class="field-error" th:if="${#fields.hasErrors('maxParticipants')}" th:errors="*{maxParticipants}"></span>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 16px;">
+                <label>Описание</label>
+                <textarea class="form-control" th:field="*{description}"></textarea>
+                <span class="field-error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></span>
+            </div>
+
+            <button type="submit" class="btn-submit btn-primary">Создать событие</button>
+        </form>
+    </div>
+
+    <!-- Форма обновления -->
+    <div class="card">
+        <div class="card-title">Обновить событие</div>
+        <p style="font-size: 13px; color: #8e8e93; margin-bottom: 16px;">Заполняйте только те поля, которые требуется изменить.</p>
+
+        <form th:action="@{/admin/events/update}" method="post">
+            <div class="filter-grid">
+                <div class="form-group">
+                    <label>ID события *</label>
+                    <input type="number" class="form-control" name="id" required placeholder="Введите ID" />
+                </div>
+                <div class="form-group">
+                    <label>Новое название</label>
+                    <input type="text" class="form-control" name="title" placeholder="Без изменений" />
+                </div>
+                <div class="form-group">
+                    <label>Новая категория</label>
+                    <input type="text" class="form-control" name="category" placeholder="Без изменений" />
+                </div>
+                <div class="form-group">
+                    <label>Новая дата</label>
+                    <input type="date" class="form-control" name="eventDate" />
+                </div>
+                <div class="form-group">
+                    <label>Новое время</label>
+                    <input type="time" class="form-control" name="eventTime" />
+                </div>
+                <div class="form-group">
+                    <label>Новая локация</label>
+                    <input type="text" class="form-control" name="location" placeholder="Без изменений" />
+                </div>
+                <div class="form-group">
+                    <label>Новое макс. мест</label>
+                    <input type="number" class="form-control" name="maxParticipants" placeholder="Без изменений" />
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 16px;">
+                <label>Новое описание</label>
+                <textarea class="form-control" name="description" placeholder="Без изменений"></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">Обновить событие</button>
+        </form>
+    </div>
+
 </main>
 
 </body>

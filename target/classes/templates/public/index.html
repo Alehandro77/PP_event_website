@@ -31,7 +31,6 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 12px;
         }
 
         .logo {
@@ -70,6 +69,12 @@
             background-color: #f8f9fa;
             font-size: 13px;
             outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-container input:focus {
+            border-color: #ff3b30;
+            background-color: #ffffff;
         }
 
         .search-icon {
@@ -126,23 +131,7 @@
             text-decoration: none;
         }
 
-        .nav-categories {
-            display: flex;
-            gap: 20px;
-            list-style: none;
-            font-size: 13px;
-        }
-
-        .nav-categories a {
-            color: #495057;
-            text-decoration: none;
-        }
-
-        .nav-categories a.active {
-            color: #ff3b30;
-            font-weight: 600;
-        }
-
+        /* --- Main Layout --- */
         .main-container {
             flex: 1;
             max-width: 1200px;
@@ -177,6 +166,77 @@
             text-decoration: none;
         }
 
+        /* --- Grid & Event Cards --- */
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 24px;
+            margin-bottom: 60px;
+        }
+
+        .event-card {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .event-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+        }
+
+        .event-card-body {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .event-category-tag {
+            font-size: 11px;
+            font-weight: 700;
+            color: #ff3b30;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .event-title {
+            font-size: 18px;
+            font-weight: 600;
+            line-height: 1.3;
+            margin-bottom: 12px;
+            color: #1e1e1e;
+        }
+
+        .event-description {
+            font-size: 13px;
+            color: #6c757d;
+            line-height: 1.4;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .event-meta {
+            margin-top: auto;
+            padding-top: 12px;
+            border-top: 1px solid #f1f3f5;
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #8c8c8c;
+        }
+
+        /* --- Empty State --- */
         .empty-state {
             background: #ffffff;
             border-radius: 12px;
@@ -198,6 +258,7 @@
             color: #8c8c8c;
         }
 
+        /* --- Subscribe Banner --- */
         .subscribe-card {
             background: #ffffff;
             border-radius: 12px;
@@ -246,6 +307,7 @@
             cursor: pointer;
         }
 
+        /* --- Footer --- */
         footer {
             background-color: #111111;
             color: #ffffff;
@@ -317,12 +379,13 @@
             ГОРОД N <span class="logo-badge">АФИША</span>
         </a>
 
-        <div class="search-container">
+        <!-- Форма поиска -->
+        <form th:action="@{/}" method="get" class="search-container">
             <span class="search-icon">🔍</span>
-            <input type="text" placeholder="Поиск концертов, спектаклей, выставок...">
-        </div>
+            <input type="text" name="keyword" placeholder="Поиск мероприятий..." th:value="${searchKeyword}">
+        </form>
 
-        <!--голова для юзера-->
+        <!-- Голова для юзера -->
         <div th:if="${user != null}" class="user-profile-header">
             <div class="user-name-dot">
                 <span class="red-dot"></span>
@@ -342,40 +405,43 @@
             </form>
         </div>
 
-        <!--голова для гостя-->
+        <!-- Голова для гостя -->
         <a th:if="${user == null}" th:href="@{/login}" class="btn-header-login">Войти</a>
     </div>
-
-    <nav>
-        <ul class="nav-categories">
-            <li><a href="#" class="active">Все события</a></li>
-            <li><a href="#">Концерты</a></li>
-            <li><a href="#">Спектакли</a></li>
-            <li><a href="#">Выставки</a></li>
-            <li><a href="#">Кино</a></li>
-            <li><a href="#">Фестивали</a></li>
-            <li><a href="#">Спорт</a></li>
-            <li><a href="#">Детям</a></li>
-        </ul>
-    </nav>
 </header>
 
 <main class="main-container">
     <div class="section-header">
         <div>
             <h1 class="section-title">Ближайшие мероприятия</h1>
-            <p class="section-subtitle">Планы на субботу и воскресенье, 14–15 июня</p>
+            <p class="section-subtitle">Планы на ближайшие дни в Городе N</p>
         </div>
-        <a href="#" class="view-all-link">Все события в выходные &rsaquo;</a>
     </div>
 
-    <!--заглушка-->
-    <div th:if="${#lists.isEmpty(events)}" class="empty-state">
+    <!-- Заглушка, если нет мероприятий -->
+    <div th:if="${events == null or #lists.isEmpty(events)}" class="empty-state">
         <div class="empty-state-title">Мероприятия не найдены</div>
-        <div class="empty-state-desc">В ближайшее время нет запланированных событий. Следите за обновлениями!</div>
+        <div class="empty-state-desc">По вашему запросу ничего не найдено.</div>
     </div>
 
-    <!--окошечко с подпсикой-->
+    <!-- Сетка с мероприятиями -->
+    <div th:if="${events != null and !#lists.isEmpty(events)}" class="events-grid">
+        <!-- Ссылка ведет на /public/events/{id}, чтобы пройти фильтр безопасности без авторизации -->
+        <a th:each="event : ${events}" th:href="@{/public/events/{id}(id=${event.id})}" class="event-card">
+            <div class="event-card-body">
+                <div class="event-category-tag" th:text="${event.category}">Категория</div>
+                <h3 class="event-title" th:text="${event.title}">Название мероприятия</h3>
+                <p class="event-description" th:text="${event.description}">Описание мероприятия...</p>
+
+                <div class="event-meta">
+                    <span class="event-date" th:text="${event.eventDate != null ? #temporals.format(event.eventDate, 'dd MMMM yyyy') : 'Дата уточняется'}">Дата</span>
+                    <span class="event-location" th:text="${event.location}">Локация</span>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Окошечко с подпиской -->
     <div th:if="${user == null}" class="subscribe-card">
         <div class="subscribe-info">
             <h3>Будьте в курсе главных событий</h3>
@@ -396,16 +462,6 @@
             <p>Независимый городской путеводитель по культурным событиям, местам отдыха и интересным особенностям Города N.</p>
         </div>
         <div class="footer-columns">
-            <div class="footer-col">
-                <h4>Афиша</h4>
-                <ul>
-                    <li><a href="#">Все события</a></li>
-                    <li><a href="#">Концерты</a></li>
-                    <li><a href="#">Спектакли</a></li>
-                    <li><a href="#">Выставки</a></li>
-                    <li><a href="#">Фестивали</a></li>
-                </ul>
-            </div>
             <div class="footer-col">
                 <h4>О проекте</h4>
                 <ul>

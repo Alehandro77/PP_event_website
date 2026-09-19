@@ -62,7 +62,7 @@ public class RegistrationServiceImpl implements RegistrationService{
     public long getTotalParticipants(Long eventId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new EntityNotFoundException("Мероприятие с ID " + eventId + " не найдено"));
-        return registrationRepository.countByEventAndStatus(event, "confirmed");
+        return registrationRepository.countByEventAndStatus(event, "CONFIRMED");
     }
 
     public boolean checkAvailableSlots(Long eventId) {
@@ -111,7 +111,7 @@ public class RegistrationServiceImpl implements RegistrationService{
         Registration registration = new Registration();
         registration.setUser(user);
         registration.setEvent(event);
-        registration.setStatus("confirmed");
+        registration.setStatus("CONFIRMED");
 
         return registrationRepository.save(registration);
     }
@@ -128,7 +128,7 @@ public class RegistrationServiceImpl implements RegistrationService{
     @Transactional
     public void cancelRegistration(Long registrationId) {
         Registration registration = getById(registrationId);
-        registration.setStatus("cancelled");
+        registration.setStatus("CANCELLED");
         registrationRepository.save(registration);
     }
 
@@ -158,9 +158,9 @@ public class RegistrationServiceImpl implements RegistrationService{
             throw new IllegalStateException("Регистрация этого пользователя на это событие уже существует");
         }
 
-        String targetStatus = (status == null || status.isBlank()) ? "confirmed" : status.trim().toLowerCase();
+        String targetStatus = (status == null || status.isBlank()) ? "CONFIRMED" : status.trim().toUpperCase();
 
-        if ("confirmed".equalsIgnoreCase(targetStatus) && !checkAvailableSlots(eventId)) {
+        if ("CONFIRMED".equalsIgnoreCase(targetStatus) && !checkAvailableSlots(eventId)) {
             throw new IllegalStateException("Нельзя создать регистрацию: на мероприятие нет свободных мест");
         }
 
@@ -177,12 +177,12 @@ public class RegistrationServiceImpl implements RegistrationService{
         Registration existing = getById(id);
 
         Long targetEventId = (eventId != null) ? eventId : existing.getEvent().getId();
-        String targetStatus = (status != null && !status.isBlank()) ? status.trim().toLowerCase() : existing.getStatus();
+        String targetStatus = (status != null && !status.isBlank()) ? status.trim().toUpperCase() : existing.getStatus();
 
-        boolean isBecomingConfirmed = "confirmed".equalsIgnoreCase(targetStatus) && !"confirmed".equalsIgnoreCase(existing.getStatus());
+        boolean isBecomingConfirmed = "CONFIRMED".equalsIgnoreCase(targetStatus) && !"CONFIRMED".equalsIgnoreCase(existing.getStatus());
         boolean isEventChanged = eventId != null && !eventId.equals(existing.getEvent().getId());
 
-        if ((isBecomingConfirmed || isEventChanged) && "confirmed".equalsIgnoreCase(targetStatus)) {
+        if ((isBecomingConfirmed || isEventChanged) && "CONFIRMED".equalsIgnoreCase(targetStatus)) {
             if (!checkAvailableSlots(targetEventId)) {
                 throw new IllegalStateException("Нельзя обновить регистрацию: на выбранное мероприятие нет свободных мест");
             }

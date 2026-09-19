@@ -230,24 +230,15 @@
 <!-- Шапка -->
 <header>
   <div class="header-top">
-    <div class="logo">
-      <a th:href="@{/}">ГОРОД N</a>
-    </div>
-    <div class="search-bar">
+    <a th:href="@{/}" class="logo">
+      ГОРОД N <span class="logo-badge">АФИША</span>
+    </a>
+    <div class="search-container">
+      <span class="search-icon">🔍</span>
       <input type="text" placeholder="Поиск концертов, спектаклей, выставок...">
     </div>
-    <a th:href="@{/login}" class="btn-login">Войти</a>
+    <a th:href="@{/login}" class="btn-header-login">Войти</a>
   </div>
-  <ul class="nav-links">
-    <li><a th:href="@{/}">Все события</a></li>
-    <li><a th:href="@{/public/concerts}">Концерты</a></li>
-    <li><a th:href="@{/public/spectacles}">Спектакли</a></li>
-    <li><a th:href="@{/public/exhibitions}">Выставки</a></li>
-    <li><a th:href="@{/public/cinema}">Кино</a></li>
-    <li><a th:href="@{/public/festivals}">Фестивали</a></li>
-    <li><a th:href="@{/public/sport}">Спорт</a></li>
-    <li><a th:href="@{/public/kids}">Детям</a></li>
-  </ul>
 </header>
 
 <!-- Основной блок -->

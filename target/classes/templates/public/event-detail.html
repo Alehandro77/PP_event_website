@@ -197,26 +197,6 @@
             margin-top: 2px;
         }
 
-        .alert-message {
-            padding: 10px 14px;
-            border-radius: 6px;
-            font-size: 13px;
-            margin-bottom: 16px;
-            font-weight: 500;
-        }
-
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
         .btn-booking {
             display: block;
             width: 100%;
@@ -323,10 +303,6 @@
 
         <!-- Правая карточка с информацией и бронью -->
         <aside class="booking-card">
-            <!-- Сообщения об успехе или ошибке -->
-            <div th:if="${successMessage}" class="alert-message alert-success" th:text="${successMessage}"></div>
-            <div th:if="${errorMessage}" class="alert-message alert-error" th:text="${errorMessage}"></div>
-
             <div class="info-block">
                 <div class="info-label">Площадка</div>
                 <div class="info-value" th:text="${event.location}">Название локации</div>
@@ -343,7 +319,7 @@
                 <div class="info-value" th:text="${event.maxParticipants}">100</div>
             </div>
 
-            <!-- Форма бронирования (исправлена под маршрут /events/{id}/register) -->
+            <!-- Кнопка действия -->
             <form th:action="@{/events/{id}/register(id=${event.id})}" method="post">
                 <button type="submit" class="btn-booking">Забронировать билеты</button>
             </form>

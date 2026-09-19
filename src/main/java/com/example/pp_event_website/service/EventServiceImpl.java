@@ -50,6 +50,23 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    public List<Event> searchEvents(String keyword, String category) {
+        String cleanKeyword = (keyword != null && !keyword.isBlank()) ? keyword.trim() : null;
+        String cleanCategory = (category != null && !category.isBlank()) ? category.trim() : null;
+
+        return eventRepository.findByEventParameters(
+                cleanKeyword,      // title
+                null,              // description
+                cleanCategory,     // category
+                null,              // eventDate
+                null,              // eventTime
+                null,              // location
+                null,              // maxParticipants
+                Pageable.unpaged() // без пагинации
+        ).getContent();
+    }
+
+    @Override
     public Page<Event> searchByDescription(String description, Pageable pageable) {
         return eventRepository.findByDescriptionIgnoreCase(description, pageable);
     }
