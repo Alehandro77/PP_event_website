@@ -9,46 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Inter', sans-serif; background-color: #f5f5f7; color: #1c1c1e; display: flex; min-height: 100vh; }
-
-        /* Sidebar */
-        .sidebar { width: 250px; background-color: #ffffff; border-right: 1px solid #e5e5ea; padding: 24px 16px; display: flex; flex-direction: column; position: fixed; height: 100vh; overflow-y: auto; }
-        .sidebar-logo { font-size: 18px; font-weight: 800; color: #1c1c1e; text-decoration: none; display: flex; align-items: center; gap: 8px; margin-bottom: 32px; padding: 0 12px; }
-        .sidebar-badge { background-color: #ff3b19; color: white; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 700; }
-        .sidebar-nav { list-style: none; flex: 1; display: flex; flex-direction: column; gap: 4px; }
-        .sidebar-nav a { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 10px; text-decoration: none; color: #636366; font-size: 14px; font-weight: 500; }
-        .sidebar-nav a:hover { background-color: #f2f2f7; color: #1c1c1e; }
-        .sidebar-footer { border-top: 1px solid #e5e5ea; padding-top: 16px; margin-top: auto; }
-        .logout-btn { width: 100%; text-align: left; background: none; border: none; padding: 12px 16px; border-radius: 10px; color: #636366; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 12px; }
-
-        /* Main Content */
-        .main-content { flex: 1; margin-left: 250px; padding: 32px 40px; display: flex; flex-direction: column; }
-        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
-        .page-title { font-size: 14px; font-weight: 500; color: #8e8e93; }
-        .user-info { display: flex; align-items: center; gap: 12px; }
-        .user-avatar { width: 36px; height: 36px; border-radius: 50%; background-color: #ff3b19; color: white; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
-        .user-details { text-align: right; }
-        .user-name { font-size: 13px; font-weight: 600; }
-        .user-role { font-size: 11px; color: #8e8e93; }
-
-        /* Error Screen Container */
-        .error-container { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 0; }
-        .error-card { background: #ffffff; border-radius: 16px; padding: 48px; border: 1px solid #e5e5ea; text-align: center; max-width: 480px; width: 100%; box-shadow: 0 4px 24px rgba(0,0,0,0.02); }
-
-        .error-badge { display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; background-color: #fff0f0; color: #ff3b19; border-radius: 50%; font-size: 28px; font-weight: 800; margin-bottom: 20px; }
-        .error-code { font-size: 12px; font-weight: 700; color: #ff3b19; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-        .error-title { font-size: 24px; font-weight: 800; margin-bottom: 12px; color: #1c1c1e; }
-        .error-description { font-size: 14px; color: #636366; line-height: 1.5; margin-bottom: 32px; }
-
-        .btn-group { display: flex; gap: 12px; justify-content: center; }
-        .btn { padding: 12px 20px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 600; cursor: pointer; transition: background-color 0.2s; display: inline-flex; align-items: center; justify-content: center; }
-        .btn-primary { background-color: #1c1c1e; color: #ffffff; border: none; }
-        .btn-primary:hover { background-color: #2c2c2e; }
-        .btn-secondary { background-color: #f2f2f7; color: #636366; border: 1px solid #e5e5ea; }
-        .btn-secondary:hover { background-color: #e5e5ea; color: #1c1c1e; }
-    </style>
+    <link rel="stylesheet" href="/admin.css">
 </head>
 <body>
 
@@ -56,15 +17,9 @@
     <a th:href="@{/}" class="sidebar-logo">
         ГОРОД N <span class="sidebar-badge">СЕРВИС</span>
     </a>
-    <ul class="sidebar-nav">
-        <li><a th:href="@{/admin/}"><span class="icon">📊</span> Главная</a></li>
-        <li><a th:href="@{/admin/events}"><span class="icon">📅</span> События</a></li>
-        <li><a th:href="@{/admin/users}"><span class="icon">👥</span> Пользователи</a></li>
-        <li><a th:href="@{/admin/registrations}"><span class="icon">📝</span> Регистрации</a></li>
-    </ul>
     <div class="sidebar-footer" sec:authorize="isAuthenticated()">
         <form th:action="@{/logout}" method="post">
-            <button type="submit" class="logout-btn"><span class="icon">🚪</span> Выйти</button>
+            <button type="submit" class="logout-btn">Выйти</button>
         </form>
     </div>
 </aside>
@@ -78,11 +33,13 @@
                 <div class="user-name" th:text="${currentUser?.name ?: #authentication?.name ?: 'Пользователь'}">
                     Пользователь
                 </div>
-                <div class="user-role" th:text="${#authentication?.getAuthorities()?.get(0)?.getAuthority() ?: 'Гость'}">
+                <div class="user-role"
+                     th:text="${#authentication?.getAuthorities()?.get(0)?.getAuthority() ?: 'Гость'}">
                     Пользователь
                 </div>
             </div>
-            <div class="user-avatar" th:text="${currentUser?.name != null ? #strings.substring(currentUser.name, 0, 1) : 'U'}">
+            <div class="user-avatar"
+                 th:text="${currentUser?.name != null ? #strings.substring(currentUser.name, 0, 1) : 'U'}">
                 U
             </div>
         </div>
@@ -94,7 +51,8 @@
             <div class="error-code">Ошибка 403</div>
             <h1 class="error-title">Доступ ограничен</h1>
             <p class="error-description">
-                У вашей учетной записи недостаточно прав для просмотра этой страницы. Обратитесь к администратору, если считаете, что это ошибка.
+                У вашей учетной записи недостаточно прав для просмотра этой страницы. Обратитесь к администратору, если
+                считаете, что это ошибка.
             </p>
             <div class="btn-group">
                 <a href="javascript:history.back()" class="btn btn-secondary">Назад</a>

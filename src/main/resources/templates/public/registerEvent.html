@@ -4,326 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${event.title} + ' — Город N'">Детали мероприятия — Город N</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f8f9fa;
-            color: #1e1e1e;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        /* --- Header --- */
-        header {
-            background-color: #ffffff;
-            border-bottom: 1px solid #e9ecef;
-            padding: 12px 40px;
-        }
-
-        .header-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .logo {
-            font-size: 20px;
-            font-weight: 800;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: #1e1e1e;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .logo-badge {
-            background-color: #ff3b30;
-            color: white;
-            font-size: 9px;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: 600;
-        }
-
-        .search-container {
-            flex: 1;
-            max-width: 500px;
-            margin: 0 40px;
-            position: relative;
-        }
-
-        .search-container input {
-            width: 100%;
-            padding: 8px 16px 8px 36px;
-            border-radius: 20px;
-            border: 1px solid #e0e0e0;
-            background-color: #f8f9fa;
-            font-size: 13px;
-            outline: none;
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #8c8c8c;
-            font-size: 14px;
-        }
-
-        .user-profile-header {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            font-size: 13px;
-        }
-
-        .user-name-dot {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: #1e1e1e;
-            font-weight: 500;
-        }
-
-        .red-dot {
-            width: 6px;
-            height: 6px;
-            background-color: #ff3b30;
-            border-radius: 50%;
-            display: inline-block;
-        }
-
-        .profile-link {
-            color: #6c757d;
-            text-decoration: none;
-        }
-
-        .btn-header-login {
-            background-color: #ff3b30;
-            color: white;
-            padding: 8px 20px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 500;
-            text-decoration: none;
-        }
-
-        /* --- Page Layout --- */
-        .main-container {
-            flex: 1;
-            max-width: 1100px;
-            width: 100%;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-
-        .event-detail-grid {
-            display: grid;
-            grid-template-columns: 1fr 340px;
-            gap: 48px;
-            align-items: start;
-        }
-
-        /* --- Left Column Content --- */
-        .event-category {
-            font-size: 11px;
-            font-weight: 700;
-            color: #ff3b30;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 12px;
-        }
-
-        .event-title {
-            font-size: 32px;
-            font-weight: 700;
-            line-height: 1.25;
-            color: #1e1e1e;
-            margin-bottom: 24px;
-        }
-
-        .event-description-box {
-            font-size: 15px;
-            line-height: 1.6;
-            color: #333333;
-            white-space: pre-line;
-        }
-
-        /* --- Right Sidebar Card --- */
-        .booking-card {
-            background: #ffffff;
-            border-radius: 12px;
-            border: 1px solid #e9ecef;
-            padding: 24px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.03);
-        }
-
-        .info-block {
-            margin-bottom: 20px;
-        }
-
-        .info-block:last-of-type {
-            margin-bottom: 24px;
-        }
-
-        .info-label {
-            font-size: 11px;
-            text-transform: uppercase;
-            color: #8c8c8c;
-            font-weight: 600;
-            margin-bottom: 4px;
-            letter-spacing: 0.5px;
-        }
-
-        .info-value {
-            font-size: 15px;
-            font-weight: 600;
-            color: #1e1e1e;
-        }
-
-        .info-subvalue {
-            font-size: 13px;
-            color: #6c757d;
-            margin-top: 2px;
-        }
-
-        .alert-message {
-            padding: 10px 14px;
-            border-radius: 6px;
-            font-size: 13px;
-            margin-bottom: 16px;
-            font-weight: 500;
-        }
-
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .btn-booking {
-            display: block;
-            width: 100%;
-            background-color: #ff3b30;
-            color: #ffffff;
-            border: none;
-            padding: 12px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            text-align: center;
-            text-decoration: none;
-            transition: background-color 0.2s;
-        }
-
-        .btn-booking:hover {
-            background-color: #e03126;
-        }
-
-        /* --- Footer --- */
-        footer {
-            background-color: #111111;
-            color: #ffffff;
-            padding: 40px 60px 20px;
-            margin-top: 60px;
-        }
-
-        .footer-content {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 40px;
-        }
-
-        .footer-brand .logo-footer {
-            font-size: 18px;
-            font-weight: 800;
-            letter-spacing: 1px;
-            margin-bottom: 12px;
-        }
-
-        .footer-brand p {
-            font-size: 11px;
-            color: #8c8c8c;
-            max-width: 250px;
-            line-height: 1.5;
-        }
-
-        .footer-bottom {
-            border-top: 1px solid #222222;
-            padding-top: 20px;
-            font-size: 11px;
-            color: #666666;
-        }
-
-        @media (max-width: 768px) {
-            .event-detail-grid {
-                grid-template-columns: 1fr;
-                gap: 32px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 
-<header>
-    <div class="header-top">
-        <a th:href="@{/}" class="logo">
-            ГОРОД N <span class="logo-badge">АФИША</span>
-        </a>
-
-        <form th:action="@{/}" method="get" class="search-container">
-            <span class="search-icon">🔍</span>
-            <input type="text" name="keyword" placeholder="Поиск мероприятий...">
-        </form>
-
-        <div th:if="${user != null}" class="user-profile-header">
-            <div class="user-name-dot">
-                <span class="red-dot"></span>
-                <span th:text="${user.name}">Пользователь</span>
-            </div>
-            <a th:if="${user.role.name() == 'ADMIN'}" th:href="@{/admin/}" class="profile-link" style="color: #ff3b30; font-weight: 600;">Админ-панель</a>
-            <a th:if="${user.role.name() == 'USER'}" th:href="@{/user/profile}" class="profile-link">Личный кабинет</a>
-            <form th:action="@{/logout}" method="post" style="display:inline;">
-                <button type="submit" class="profile-link" style="background:none;border:none;cursor:pointer;">Выход</button>
-            </form>
-        </div>
-
-        <a th:if="${user == null}" th:href="@{/login}" class="btn-header-login">Войти</a>
-    </div>
+<header class="header">
+    <a th:href="@{/}" class="logo">
+        ГОРОД N <span class="logo-badge">АФИША</span>
+    </a>
 </header>
 
-<main class="main-container">
+<main class="main-container main-container--narrow">
     <div class="event-detail-grid">
-        <!-- Основное содержимое слева -->
         <div class="event-main-content">
-            <div class="event-category" th:text="${event.category}">Концерт</div>
-            <h1 class="event-title" th:text="${event.title}">Название события</h1>
+            <div class="event-detail-category" th:text="${event.category}">Концерт</div>
+            <h1 class="event-detail-title" th:text="${event.title}">Название события</h1>
 
-            <div class="event-description-box" th:text="${event.description}">
+            <div class="event-detail-description" th:text="${event.description}">
                 Полное описание события...
             </div>
         </div>
 
-        <!-- Правая карточка с информацией и бронью -->
         <aside class="booking-card">
-            <!-- Сообщения об успехе или ошибке -->
             <div th:if="${successMessage}" class="alert-message alert-success" th:text="${successMessage}"></div>
             <div th:if="${errorMessage}" class="alert-message alert-error" th:text="${errorMessage}"></div>
 
@@ -343,8 +45,8 @@
                 <div class="info-value" th:text="${event.maxParticipants}">100</div>
             </div>
 
-            <!-- Форма бронирования (исправлена под маршрут /events/{id}/register) -->
-            <form th:action="@{/events/{id}/register(id=${event.id})}" method="post">
+            <form th:action="@{/events/register}" method="post">
+                <input type="hidden" name="eventId" th:value="${event.id}">
                 <button type="submit" class="btn-booking">Забронировать билеты</button>
             </form>
         </aside>

@@ -13,7 +13,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.data.domain.PageRequest;
 
 @Controller
 @RequestMapping("/admin/users")
@@ -30,13 +29,10 @@ public class AdminUserController {
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String role,
-            @PageableDefault(size = 10, sort = "id") Pageable pageable,
+            @PageableDefault(size = 5, sort = "id") Pageable pageable,
             Model model) {
 
-        Pageable customPageable = PageRequest.of(pageable.getPageNumber(), 10, pageable.getSort());
-
-        // Передаём customPageable
-        Page<User> usersPage = userService.searchByUserParameters(name, email, role, customPageable);
+        Page<User> usersPage = userService.searchByUserParameters(name, email, role, pageable);
 
         model.addAttribute("users", usersPage);
         model.addAttribute("paramName", name);

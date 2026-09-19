@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -8,384 +7,7 @@
     <title>Управление событиями — Админ-панель</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f5f5f7;
-            color: #1c1c1e;
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* Sidebar Styles */
-        .sidebar {
-            width: 250px;
-            background-color: #ffffff;
-            border-right: 1px solid #e5e5ea;
-            padding: 24px 16px;
-            display: flex;
-            flex-direction: column;
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-        }
-
-        .sidebar-logo {
-            font-size: 18px;
-            font-weight: 800;
-            color: #1c1c1e;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 32px;
-            padding: 0 12px;
-        }
-
-        .sidebar-badge {
-            background-color: #ff3b19;
-            color: white;
-            font-size: 9px;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: 700;
-        }
-
-        .sidebar-nav {
-            list-style: none;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .sidebar-nav a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            border-radius: 10px;
-            text-decoration: none;
-            color: #636366;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .sidebar-nav a:hover {
-            background-color: #f2f2f7;
-            color: #1c1c1e;
-        }
-
-        .sidebar-nav a.active {
-            background-color: #fff2f1;
-            color: #ff3b19;
-            font-weight: 600;
-        }
-
-        .sidebar-footer {
-            border-top: 1px solid #e5e5ea;
-            padding-top: 16px;
-            margin-top: auto;
-        }
-
-        .logout-btn {
-            width: 100%;
-            text-align: left;
-            background: none;
-            border: none;
-            padding: 12px 16px;
-            border-radius: 10px;
-            color: #636366;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            margin-left: 250px;
-            padding: 32px 40px;
-        }
-
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 28px;
-        }
-
-        .page-title {
-            font-size: 14px;
-            font-weight: 500;
-            color: #8e8e93;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .user-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background-color: #ff3b19;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            font-weight: 700;
-        }
-
-        .user-details {
-            text-align: right;
-        }
-
-        .user-name {
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .user-role {
-            font-size: 11px;
-            color: #8e8e93;
-        }
-
-        .content-header {
-            margin-bottom: 24px;
-        }
-
-        .content-title {
-            font-size: 24px;
-            font-weight: 800;
-        }
-
-        /* Cards & Form Elements */
-        .card {
-            background: #ffffff;
-            border-radius: 12px;
-            padding: 24px;
-            border: 1px solid #e5e5ea;
-            margin-bottom: 28px;
-        }
-
-        .card-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 16px;
-            color: #1c1c1e;
-        }
-
-        .filter-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .form-group label {
-            font-size: 12px;
-            font-weight: 600;
-            color: #636366;
-        }
-
-        .form-control {
-            padding: 10px 14px;
-            border: 1px solid #e5e5ea;
-            border-radius: 8px;
-            font-size: 14px;
-            outline: none;
-            background: #fafafa;
-            font-family: inherit;
-        }
-
-        .form-control:focus {
-            border-color: #ff3b19;
-            background: #ffffff;
-        }
-
-        textarea.form-control {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .form-actions {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            margin-top: 8px;
-        }
-
-        .btn-submit {
-            padding: 10px 20px;
-            background-color: #1c1c1e;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            height: 40px;
-        }
-
-        .btn-submit:hover {
-            background-color: #2c2c2e;
-        }
-
-        .btn-primary {
-            background-color: #ff3b19;
-        }
-
-        .btn-primary:hover {
-            background-color: #e03215;
-        }
-
-        .btn-reset {
-            padding: 10px 18px;
-            background-color: #f2f2f7;
-            color: #636366;
-            border-radius: 8px;
-            font-size: 14px;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            height: 40px;
-            font-weight: 500;
-        }
-
-        .btn-delete {
-            padding: 6px 12px;
-            background-color: #fff0f0;
-            color: #ff3b30;
-            border: 1px solid #ffe5e5;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .btn-delete:hover {
-            background-color: #ff3b30;
-            color: white;
-        }
-
-        /* Tables */
-        .table-container {
-            background: #ffffff;
-            border-radius: 12px;
-            border: 1px solid #e5e5ea;
-            overflow: hidden;
-            margin-bottom: 24px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-
-        thead {
-            background-color: #fafafa;
-            border-bottom: 1px solid #e5e5ea;
-        }
-
-        th {
-            padding: 14px 20px;
-            font-size: 12px;
-            font-weight: 600;
-            color: #8e8e93;
-        }
-
-        td {
-            padding: 16px 20px;
-            font-size: 13px;
-            color: #1c1c1e;
-            border-bottom: 1px solid #e5e5ea;
-            vertical-align: middle;
-        }
-
-        /* Pagination */
-        .pagination {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 32px;
-        }
-
-        .pagination a {
-            padding: 8px 14px;
-            background: #ffffff;
-            border: 1px solid #e5e5ea;
-            border-radius: 8px;
-            color: #1c1c1e;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .pagination a.active {
-            background-color: #ff3b19;
-            color: white;
-            border-color: #ff3b19;
-            font-weight: 700;
-        }
-
-        /* Alerts & Badges */
-        .alert {
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-
-        .alert-success {
-            background-color: #ebfbee;
-            color: #2b8a3e;
-            border: 1px solid #d3f9d8;
-        }
-
-        .alert-error {
-            background-color: #fff0f0;
-            color: #c92a2a;
-            border: 1px solid #ffdeeb;
-        }
-
-        .field-error {
-            color: #ff3b30;
-            font-size: 11px;
-            margin-top: 2px;
-        }
-
-        .badge-cat {
-            background-color: #f2f2f7;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 12px;
-            color: #636366;
-        }
-    </style>
+    <link rel="stylesheet" href="/admin.css">
 </head>
 <body>
 
@@ -393,38 +15,46 @@
     <a th:href="@{/admin/}" class="sidebar-logo">
         ГОРОД N <span class="sidebar-badge">АДМИН</span>
     </a>
+
     <ul class="sidebar-nav">
-        <li><a th:href="@{/admin/}"><span class="icon">📊</span> Главная</a></li>
-        <li><a th:href="@{/admin/events}" class="active"><span class="icon">📅</span> События</a></li>
-        <li><a th:href="@{/admin/users}"><span class="icon">👥</span> Пользователи</a></li>
-        <li><a th:href="@{/admin/registrations}"><span class="icon">📝</span> Регистрации</a></li>
+        <li>
+            <a th:href="@{/admin/}">
+                Главная
+            </a>
+        </li>
+        <li>
+            <a th:href="@{/admin/events}" class="active">
+                События
+            </a>
+        </li>
+        <li>
+            <a th:href="@{/admin/users}">
+                Пользователи
+            </a>
+        </li>
+        <li>
+            <a th:href="@{/admin/registrations}">
+                Регистрации
+            </a>
+        </li>
     </ul>
+
     <div class="sidebar-footer">
         <form th:action="@{/logout}" method="post">
-            <button type="submit" class="logout-btn"><span class="icon">🚪</span> Выйти</button>
+            <button type="submit" class="logout-btn">
+                Выйти
+            </button>
         </form>
     </div>
 </aside>
+
 
 <main class="main-content">
 
     <div class="top-bar">
         <div class="page-title">Админ-панель Город N</div>
-        <div class="user-info">
-            <div class="user-details">
-                <div class="user-name" th:text="${currentUser?.name ?: #authentication?.name ?: 'Администратор'}">
-                    Администратор
-                </div>
-                <div class="user-role">Администратор</div>
-            </div>
-            <div class="user-avatar"
-                 th:text="${currentUser?.name != null ? #strings.substring(currentUser.name, 0, 1) : 'А'}">
-                А
-            </div>
-        </div>
     </div>
 
-    <!-- Уведомления -->
     <div th:if="${errorMessage}" class="alert alert-error" th:text="${errorMessage}"></div>
     <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
 
@@ -432,7 +62,6 @@
         <h1 class="content-title">Управление событиями</h1>
     </div>
 
-    <!-- Фильтрация и поиск -->
     <div class="card">
         <div class="card-title">Фильтр событий</div>
         <form th:action="@{/admin/events}" method="get">

@@ -55,8 +55,6 @@ public class AdminEventController {
             model.addAttribute("eventModel", new Event());
         }
 
-        model.addAttribute("categories", java.util.List.of("Концерт", "Театр", "Выставка", "Спорт", "Фестиваль"));
-
         return "admin/eventList";
     }
 
@@ -96,14 +94,6 @@ public class AdminEventController {
 
         eventService.createEvent(eventModel);
         return "redirect:/admin/events";
-    }
-
-    @GetMapping("/create")
-    public String showCreateForm(Model model) {
-        if (!model.containsAttribute("eventModel")) {
-            model.addAttribute("eventModel", new Event());
-        }
-        return "admin/eventCreate";
     }
 
     @PostMapping("/update")
