@@ -1,37 +1,483 @@
 <!DOCTYPE html>
-<html lang="ru"
-      xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Главная страница</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Главная — Город N</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+            color: #1e1e1e;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- Header --- */
+        header {
+            background-color: #ffffff;
+            border-bottom: 1px solid #e9ecef;
+            padding: 12px 40px;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #1e1e1e;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .logo-badge {
+            background-color: #ff3b30;
+            color: white;
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 500px;
+            margin: 0 40px;
+            position: relative;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 8px 16px 8px 36px;
+            border-radius: 20px;
+            border: 1px solid #e0e0e0;
+            background-color: #f8f9fa;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-container input:focus {
+            border-color: #ff3b30;
+            background-color: #ffffff;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8c8c8c;
+            font-size: 14px;
+        }
+
+        .user-profile-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 13px;
+        }
+
+        .user-name-dot {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #1e1e1e;
+            font-weight: 500;
+        }
+
+        .red-dot {
+            width: 6px;
+            height: 6px;
+            background-color: #ff3b30;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .profile-link {
+            color: #6c757d;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .profile-link:hover {
+            color: #ff3b30;
+        }
+
+        .btn-header-login {
+            background-color: #ff3b30;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        /* --- Main Layout --- */
+        .main-container {
+            flex: 1;
+            max-width: 1200px;
+            width: 100%;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: 400;
+            font-style: italic;
+            font-family: Georgia, serif;
+        }
+
+        .section-subtitle {
+            font-size: 13px;
+            color: #6c757d;
+            margin-top: 4px;
+        }
+
+        .view-all-link {
+            color: #1e1e1e;
+            font-size: 13px;
+            text-decoration: none;
+        }
+
+        /* --- Grid & Event Cards --- */
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 24px;
+            margin-bottom: 60px;
+        }
+
+        .event-card {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .event-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+        }
+
+        .event-card-body {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .event-category-tag {
+            font-size: 11px;
+            font-weight: 700;
+            color: #ff3b30;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .event-title {
+            font-size: 18px;
+            font-weight: 600;
+            line-height: 1.3;
+            margin-bottom: 12px;
+            color: #1e1e1e;
+        }
+
+        .event-description {
+            font-size: 13px;
+            color: #6c757d;
+            line-height: 1.4;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .event-meta {
+            margin-top: auto;
+            padding-top: 12px;
+            border-top: 1px solid #f1f3f5;
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #8c8c8c;
+        }
+
+        /* --- Empty State --- */
+        .empty-state {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 60px 20px;
+            text-align: center;
+            border: 1px dashed #e0e0e0;
+            margin-bottom: 60px;
+        }
+
+        .empty-state-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+        }
+
+        .empty-state-desc {
+            font-size: 13px;
+            color: #8c8c8c;
+        }
+
+        /* --- Subscribe Banner --- */
+        .subscribe-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 32px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+            margin-bottom: 60px;
+        }
+
+        .subscribe-info h3 {
+            font-size: 20px;
+            font-weight: 400;
+            font-style: italic;
+            font-family: Georgia, serif;
+            margin-bottom: 6px;
+        }
+
+        .subscribe-info p {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .subscribe-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .subscribe-form input {
+            padding: 10px 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 13px;
+            width: 260px;
+            outline: none;
+        }
+
+        .btn-subscribe {
+            background-color: #1e1e1e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        /* --- Footer --- */
+        footer {
+            background-color: #111111;
+            color: #ffffff;
+            padding: 40px 60px 20px;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+        }
+
+        .footer-brand .logo-footer {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .footer-brand p {
+            font-size: 11px;
+            color: #8c8c8c;
+            max-width: 250px;
+            line-height: 1.5;
+        }
+
+        .footer-columns {
+            display: flex;
+            gap: 60px;
+        }
+
+        .footer-col h4 {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #8c8c8c;
+            margin-bottom: 12px;
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col ul li {
+            margin-bottom: 8px;
+        }
+
+        .footer-col ul li a {
+            color: #cccccc;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #222222;
+            padding-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #666666;
+        }
+    </style>
 </head>
 <body>
 
-<form th:action="@{/logout}" method="post" style="display:inline;">
-    <button type="submit">Выйти</button>
-</form>
+<header>
+    <div class="header-top">
+        <a th:href="@{/}" class="logo">
+            ГОРОД N <span class="logo-badge">АФИША</span>
+        </a>
 
-<h2>Список событий</h2>
-
-<div th:if="${errorMessage}" style="color:red; font-weight:bold;" th:text="${errorMessage}"></div>
-<div th:if="${successMessage}" style="color:green; font-weight:bold;" th:text="${successMessage}"></div>
-
-<ul>
-    <li th:each="event : ${events}">
-        <form th:action="@{/events/details}" method="post">
-            <input type="hidden" name="id" th:value="${event.id}"/>
-            <span th:text="${event.title}"></span>
-            <span th:text="${event.eventDate}"></span>
-            <button type="submit">Посмотреть подробности</button>
+        <!-- Форма поиска -->
+        <form th:action="@{/}" method="get" class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" name="keyword" placeholder="Поиск мероприятий..." th:value="${searchKeyword}">
         </form>
-    </li>
-</ul>
 
-<a href="/user/profile">Профиль</a>
+        <!-- Голова для юзера -->
+        <div th:if="${user != null}" class="user-profile-header">
+            <div class="user-name-dot">
+                <span class="red-dot"></span>
+                <span th:text="${user.name}">Александр</span>
+            </div>
 
-<div th:if="${user != null and user.role != null and user.role.name() == 'ADMIN'}">
-    <a href="/admin/">Админ панель</a>
-</div>
+            <a th:if="${user.role.name() == 'ADMIN'}"
+               th:href="@{/admin/}"
+               class="profile-link"
+               style="color: #ff3b30; font-weight: 600;">
+                Админ-панель
+            </a>
+
+            <a th:if="${user.role.name() == 'USER'}" th:href="@{/user/profile}" class="profile-link">Личный кабинет</a>
+            <form th:action="@{/logout}" method="post" style="display:inline;">
+                <button type="submit" class="profile-link" style="background:none;border:none;cursor:pointer;">Выход</button>
+            </form>
+        </div>
+
+        <!-- Голова для гостя -->
+        <a th:if="${user == null}" th:href="@{/login}" class="btn-header-login">Войти</a>
+    </div>
+</header>
+
+<main class="main-container">
+    <div class="section-header">
+        <div>
+            <h1 class="section-title">Ближайшие мероприятия</h1>
+            <p class="section-subtitle">Планы на ближайшие дни в Городе N</p>
+        </div>
+    </div>
+
+    <!-- Заглушка, если нет мероприятий -->
+    <div th:if="${events == null or #lists.isEmpty(events)}" class="empty-state">
+        <div class="empty-state-title">Мероприятия не найдены</div>
+        <div class="empty-state-desc">По вашему запросу ничего не найдено.</div>
+    </div>
+
+    <!-- Сетка с мероприятиями -->
+    <div th:if="${events != null and !#lists.isEmpty(events)}" class="events-grid">
+        <!-- Ссылка ведет на /public/events/{id}, чтобы пройти фильтр безопасности без авторизации -->
+        <a th:each="event : ${events}" th:href="@{/public/events/{id}(id=${event.id})}" class="event-card">
+            <div class="event-card-body">
+                <div class="event-category-tag" th:text="${event.category}">Категория</div>
+                <h3 class="event-title" th:text="${event.title}">Название мероприятия</h3>
+                <p class="event-description" th:text="${event.description}">Описание мероприятия...</p>
+
+                <div class="event-meta">
+                    <span class="event-date" th:text="${event.eventDate != null ? #temporals.format(event.eventDate, 'dd MMMM yyyy') : 'Дата уточняется'}">Дата</span>
+                    <span class="event-location" th:text="${event.location}">Локация</span>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Окошечко с подпиской -->
+    <div th:if="${user == null}" class="subscribe-card">
+        <div class="subscribe-info">
+            <h3>Будьте в курсе главных событий</h3>
+            <p>Раз в неделю присылаем дайджест лучших культурных событий Города N. Никакого спама.</p>
+        </div>
+        <form class="subscribe-form" onsubmit="event.preventDefault();">
+            <input type="email" placeholder="Ваш e-mail" required>
+            <button type="submit" class="btn-subscribe">Подписаться</button>
+        </form>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer>
+    <div class="footer-content">
+        <div class="footer-brand">
+            <div class="logo-footer">ГОРОД N</div>
+            <p>Независимый городской путеводитель по культурным событиям, местам отдыха и интересным особенностям Города N.</p>
+        </div>
+        <div class="footer-columns">
+            <div class="footer-col">
+                <h4>О проекте</h4>
+                <ul>
+                    <li><a href="#">О нас</a></li>
+                    <li><a href="#">Контакты</a></li>
+                    <li><a href="#">Реклама на сайте</a></li>
+                    <li><a href="#">Условия использования</a></li>
+                    <li><a href="#">Политика конфиденциальности</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <div>© 2026 ГОРОД N Афиша. Все права защищены.</div>
+    </div>
+</footer>
 
 </body>
 </html>
