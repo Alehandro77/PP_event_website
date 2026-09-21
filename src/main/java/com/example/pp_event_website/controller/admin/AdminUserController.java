@@ -14,6 +14,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/admin/users")
 public class AdminUserController {
@@ -26,11 +28,24 @@ public class AdminUserController {
 
     @GetMapping
     public String list(
+            @RequestParam(required = false) Long id,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String role,
             @PageableDefault(size = 5, sort = "id") Pageable pageable,
             Model model) {
+
+        if (id != null) {
+            User found = userService.findById(id);
+            if (found != null) {
+                model.addAttribute("users", List.of(found));
+            } else {
+                model.addAttribute("users", List.of());
+                model.addAttribute("errorMessage", "Пользователь с ID " + id + " не найден");
+            }
+            model.addAttribute("roles", Role.values());
+            return "admin/userList";
+        }
 
         Page<User> usersPage = userService.searchByUserParameters(name, email, role, pageable);
 

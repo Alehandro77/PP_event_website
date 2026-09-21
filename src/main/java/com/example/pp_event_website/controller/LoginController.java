@@ -33,11 +33,17 @@ public class LoginController {
     @PostMapping("/register")
     public String register(@RequestParam String username,
                            @RequestParam String password,
+                           @RequestParam String confirmPassword, // ← добавить
                            @RequestParam String email,
                            Model model) {
 
+        if (!password.equals(confirmPassword)) {
+            model.addAttribute("error", "Пароли не совпадают");
+            return "register";
+        }
+
         if (userRepository.findByEmail(email).isPresent()) {
-            model.addAttribute("error", "Пользователь уже существует");
+            model.addAttribute("error", "Пользователь с таким email уже существует");
             return "register";
         }
 
@@ -48,7 +54,6 @@ public class LoginController {
         user.setRole(Role.USER);
 
         userRepository.save(user);
-
         return "redirect:/login?registered";
     }
 

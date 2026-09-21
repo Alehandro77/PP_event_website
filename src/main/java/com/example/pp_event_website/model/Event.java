@@ -23,6 +23,7 @@ public class Event {
     @Column(unique = true)
     @NotBlank(message = "Название обязательно к заполнению!")
     private String title;
+    @Column(columnDefinition = "TEXT")
     private String description;
     @NotBlank(message = "Категория обязательна к заполнению!")
     private String category;
@@ -31,6 +32,7 @@ public class Event {
     @NotNull(message = "Время события обязательна к заполнению!")
     private LocalTime eventTime;
     @NotBlank(message = "Местоположение обязательно к заполнению!")
+    @Column(columnDefinition = "TEXT")
     private String location;
     @Min(value = 1, message = "Кол-во участников должно быть не менне одного человека")
     private Integer maxParticipants;

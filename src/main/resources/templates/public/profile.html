@@ -11,7 +11,6 @@
     <a th:href="@{/}" class="logo">
         ГОРОД N <span class="logo-badge">АФИША</span>
     </a>
-
     <div class="user-menu">
         <span class="user-name">
             <span class="status-dot"></span>
@@ -29,27 +28,32 @@
 <main class="main-container">
     <h1 class="page-title">Личный кабинет</h1>
 
+    <div th:if="${successMessage}" class="alert-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert-error" th:text="${errorMessage}"></div>
+
     <div class="profile-card">
-        <div class="profile-name" th:text="${user.name}">Turik</div>
-        <p class="profile-email" th:text="'E-mail: ' + ${user.email}">E-mail: user@example.com</p>
+        <div class="profile-name" th:text="${user.name}">Имя</div>
+        <p class="profile-email" th:text="'E-mail: ' + ${user.email}">E-mail</p>
     </div>
 
     <h2 class="section-title">Мои мероприятия</h2>
 
+    <div class="empty-state" th:if="${events == null or #lists.isEmpty(events)}">
+        <p class="m-0">Вы пока не зарегистрированы ни на одно мероприятие.</p>
+    </div>
+
     <div class="events-grid" th:if="${events != null and !#lists.isEmpty(events)}">
         <div class="event-card" th:each="event : ${events}">
             <div class="event-card-body">
-                <a th:href="@{/public/events/{id}(id=${event.id})}"
-                   class="event-title"
-                   th:text="${event.title}">
-                    Название события
-                </a>
+                <div class="event-title" th:text="${event.title}">Название события</div>
 
                 <div class="event-meta">
                     <div th:text="${event.location}">Локация</div>
                     <div>
-                        <span th:text="${event.eventDate != null ? #temporals.format(event.eventDate, 'dd MMMM yyyy') : ''}">Дата</span>
-                        <span th:text="${event.eventTime != null ? #temporals.format(event.eventTime, 'HH:mm') : ''}">Время</span>
+                        <span th:text="${event.eventDate != null ?
+                            #temporals.format(event.eventDate, 'dd MMMM yyyy') : ''}">Дата</span>
+                        <span th:text="${event.eventTime != null ?
+                            #temporals.format(event.eventTime, 'HH:mm') : ''}">Время</span>
                     </div>
                 </div>
 
@@ -59,10 +63,8 @@
                 </form>
             </div>
         </div>
+    </div>
 
-        <div class="empty-state" th:if="${events == null or #lists.isEmpty(events)}">
-            <p class="m-0">Вы пока не зарегистрированы ни на одно мероприятие.</p>
-        </div>
 </main>
 
 </body>

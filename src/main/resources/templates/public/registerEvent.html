@@ -19,36 +19,54 @@
         <div class="event-main-content">
             <div class="event-detail-category" th:text="${event.category}">Концерт</div>
             <h1 class="event-detail-title" th:text="${event.title}">Название события</h1>
-
             <div class="event-detail-description" th:text="${event.description}">
                 Полное описание события...
             </div>
         </div>
 
         <aside class="booking-card">
-            <div th:if="${successMessage}" class="alert-message alert-success" th:text="${successMessage}"></div>
-            <div th:if="${errorMessage}" class="alert-message alert-error" th:text="${errorMessage}"></div>
+            <div th:if="${successMessage}" class="alert-message alert-success"
+                 th:text="${successMessage}"></div>
+            <div th:if="${errorMessage}" class="alert-message alert-error"
+                 th:text="${errorMessage}"></div>
 
             <div class="info-block">
                 <div class="info-label">Площадка</div>
-                <div class="info-value" th:text="${event.location}">Название локации</div>
+                <div class="info-value" th:text="${event.location}">Локация</div>
             </div>
 
             <div class="info-block">
                 <div class="info-label">Дата и время</div>
-                <div class="info-value" th:text="${event.eventDate != null ? #temporals.format(event.eventDate, 'dd MMMM yyyy') : 'Дата уточняется'}">14 июня 2026</div>
-                <div class="info-subvalue" th:if="${event.eventTime != null}" th:text="${#temporals.format(event.eventTime, 'HH:mm')}">19:00</div>
+                <div class="info-value"
+                     th:text="${event.eventDate != null ?
+                         #temporals.format(event.eventDate, 'dd MMMM yyyy') :
+                         'Дата уточняется'}">14 июня 2026</div>
+                <div class="info-subvalue" th:if="${event.eventTime != null}"
+                     th:text="${#temporals.format(event.eventTime, 'HH:mm')}">19:00</div>
             </div>
 
             <div class="info-block" th:if="${event.maxParticipants != null}">
-                <div class="info-label">Макс. участников</div>
-                <div class="info-value" th:text="${event.maxParticipants}">100</div>
+                <div class="info-label">Свободных мест</div>
+                <!-- ← показываем freeSlots, красим в красный если мест нет -->
+                <div class="info-value"
+                     th:text="${freeSlots != null and freeSlots > 0 ? freeSlots : 'Мест нет'}"
+                     th:style="${freeSlots == null or freeSlots <= 0} ? 'color:red' : 'color:green'">
+                </div>
             </div>
 
-            <form th:action="@{/events/register}" method="post">
-                <input type="hidden" name="eventId" th:value="${event.id}">
-                <button type="submit" class="btn-booking">Забронировать билеты</button>
-            </form>
+            <div th:if="${freeSlots != null and freeSlots > 0}">
+                <form th:action="@{/events/register}" method="post">
+                    <input type="hidden" name="eventId" th:value="${event.id}">
+                    <button type="submit" class="btn-booking">Забронировать билеты</button>
+                </form>
+            </div>
+
+            <div th:if="${freeSlots != null and freeSlots <= 0}">
+                <p style="color:red; font-weight:bold;">Все места заняты</p>
+            </div>
+
+            <br/>
+            <a th:href="@{/}">← К списку мероприятий</a>
         </aside>
     </div>
 </main>
@@ -57,7 +75,7 @@
     <div class="footer-content">
         <div class="footer-brand">
             <div class="logo-footer">ГОРОД N</div>
-            <p>Независимый городской путеводитель по культурным событиям, местам отдыха и интересным особенностям Города N.</p>
+            <p>Независимый городской путеводитель по культурным событиям.</p>
         </div>
     </div>
     <div class="footer-bottom">

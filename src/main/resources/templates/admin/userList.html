@@ -70,6 +70,13 @@
             </form>
 
             <form th:action="@{/admin/users}" method="get" class="search-form-inline">
+                <input type="text" class="form-control"
+                       placeholder="Имя пользователя" name="name"
+                       th:value="${paramName}">
+                <button type="submit" class="btn-submit">Найти по имени</button>
+            </form>
+
+            <form th:action="@{/admin/users}" method="get" class="search-form-inline">
                 <input type="email" class="form-control" placeholder="Email пользователя" name="email" required>
                 <button type="submit" class="btn-submit">Найти по Email</button>
             </form>

@@ -69,18 +69,16 @@ public class AdminEventController {
             @RequestParam(required = false) String description,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String location,
-            @RequestParam(required = false) LocalDate eventDate,
-            @RequestParam(required = false) LocalTime eventTime,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate eventDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime eventTime,
             @RequestParam(required = false) Integer maxParticipants,
             Pageable pageable
-            ) {
-
+    ) {
         if (bindingResult.hasErrors()) {
             Page<Event> eventsPage = eventService.searchByEventParameters(
                     title, description, category, eventDate, eventTime, location, maxParticipants, pageable
             );
             model.addAttribute("eventsPage", eventsPage);
-
             model.addAttribute("paramTitle", title);
             model.addAttribute("paramDescription", description);
             model.addAttribute("paramCategory", category);
@@ -88,11 +86,21 @@ public class AdminEventController {
             model.addAttribute("paramEventDate", eventDate);
             model.addAttribute("paramEventTime", eventTime);
             model.addAttribute("paramMaxParticipants", maxParticipants);
-
             return "admin/eventList";
         }
 
-        eventService.createEvent(eventModel);
+        try {
+            eventService.createEvent(eventModel);
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            Page<Event> eventsPage = eventService.searchByEventParameters(
+                    null, null, null, null, null, null, null, pageable
+            );
+            model.addAttribute("eventsPage", eventsPage);
+            model.addAttribute("eventModel", eventModel);
+            return "admin/eventList";
+        }
+
         return "redirect:/admin/events";
     }
 

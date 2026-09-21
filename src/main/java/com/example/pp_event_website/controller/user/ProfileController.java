@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -42,18 +43,21 @@ public class ProfileController {
                 .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
 
         List<Registration> registrations = registrationService.getUserRegistrations(currentUser.getId());
+
         List<Event> events = registrations.stream()
+                .filter(r -> !"cancelled".equalsIgnoreCase(r.getStatus()))
                 .map(Registration::getEvent)
                 .toList();
 
         model.addAttribute("user", currentUser);
         model.addAttribute("events", events);
         return "public/profile";
-
     }
 
     @PostMapping("/deleteReg")
-    public String deleteReg(Model model, @RequestParam Long eventId, @AuthenticationPrincipal UserDetails userDetails) {
+    public String deleteReg(@RequestParam Long eventId,
+                            @AuthenticationPrincipal UserDetails userDetails,
+                            RedirectAttributes redirectAttributes) {
 
         User currentUser = userRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
@@ -62,9 +66,11 @@ public class ProfileController {
                 .orElseThrow(() -> new EntityNotFoundException("Мероприятие не найдено"));
 
         Registration registration = registrationRepository.findByUserAndEvent(currentUser, event)
-                        .orElseThrow(() -> new EntityNotFoundException("Не найдена регистрация"));
+                .orElseThrow(() -> new EntityNotFoundException("Регистрация не найдена"));
 
-        registrationService.deleteRegistration(registration.getId());
+        registrationService.cancelRegistration(registration.getId());
+
+        redirectAttributes.addFlashAttribute("successMessage", "Запись отменена");
         return "redirect:/user/profile";
     }
 
